@@ -35,7 +35,7 @@ namespace Patterns
 
         virtual public void Enter()
         {
-            Debug.Log("State: " + Name);
+            //Debug.Log("State: " + Name);
         }
         virtual public void Exit()
         {

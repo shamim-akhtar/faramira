@@ -26,8 +26,8 @@ public class StatePlayAI : State
         Name = "StatePlayAI";
         mBoard = board;
 
-        int index = Random.Range(0, GameApp.Instance.mAudioClips.Length - 1);
-        GameApp.Instance.mAmbientSound.Play(GameApp.Instance.mAudioClips[index], 0.8f);
+        //int index = Random.Range(0, GameApp.Instance.mAudioClips.Length - 1);
+        //GameApp.Instance.mAmbientSound.Play(GameApp.Instance.mAudioClips[index], 0.8f);
     }
 
     override public void Enter()
@@ -418,7 +418,7 @@ public class Board : MonoBehaviour
         {
             float scale = dt / t;
             mCells[r * 3 + c].SetScale(is_computer, scale);
-            Debug.Log(scale);
+            //Debug.Log(scale);
             dt += Time.deltaTime;
             yield return new WaitForSeconds(0.01f);
         }

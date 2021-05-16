@@ -33,6 +33,6 @@ public class GameApp : Singleton<GameApp>
 
     void OnSceneLoaded(Scene scene, LoadSceneMode mode)
     {
-
+        Debug.Log("Loaded: " + scene.name);
     }
 }
