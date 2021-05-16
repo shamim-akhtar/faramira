@@ -249,6 +249,8 @@ public class Board : MonoBehaviour
 
     public GameObject[] mLines;
 
+    public Canvas mMainMenu;
+
     void Start()
     {
         mFSM.Add(new StateAIWin(this));
@@ -324,6 +326,7 @@ public class Board : MonoBehaviour
         mPlayBtn.gameObject.SetActive(true);
         StartCoroutine(FadeInText(2.0f, WinText));
         mAudioSource.PlayOneShot(mWinPlayer);
+        mMainMenu.gameObject.SetActive(true);
     }
 
     public void PlayerWin()
@@ -342,6 +345,7 @@ public class Board : MonoBehaviour
         mPlayBtn.gameObject.SetActive(true);
         StartCoroutine(FadeInText(2.0f, WinText));
         mAudioSource.PlayOneShot(mWinAI);
+        mMainMenu.gameObject.SetActive(true);
     }
 
     public void AIWin()
@@ -361,6 +365,8 @@ public class Board : MonoBehaviour
         mPlayBtn.gameObject.SetActive(true);
         StartCoroutine(FadeInText(2.0f, WinText));
         mAudioSource.PlayOneShot(mDraw);
+
+        mMainMenu.gameObject.SetActive(true);
     }
     public void Draw()
     {
@@ -385,6 +391,9 @@ public class Board : MonoBehaviour
         {
             mLines[i].SetActive(false);
         }
+
+        // disable the main menu.
+        mMainMenu.gameObject.SetActive(false);
     }
     public void Reset()
     {
@@ -475,5 +484,10 @@ public class Board : MonoBehaviour
     {
         mAudioSource.PlayOneShot(mClick);
         mFSM.SetCurrentState((int)StateTypes.RESET);
+    }
+
+    public void OnClick_Back()
+    {
+        SceneManager.LoadScene("MainMenu");
     }
 }
