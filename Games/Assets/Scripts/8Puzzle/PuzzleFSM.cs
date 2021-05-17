@@ -128,14 +128,15 @@ public class GameState_WIN : GameState
 
         if (_puzzle.yourTotalScore == 0)
         {
-            _puzzle.yourTotalScore = (int)((float)(_puzzle.m_astarSolution.Count - 1) / ((float)_puzzle.yourScore) * 100.0f);
+            _puzzle.yourTotalScore = _puzzle.yourScore;
         }
         else
         {
-            _puzzle.yourTotalScore += (int)((float)(_puzzle.m_astarSolution.Count - 1) / ((float)_puzzle.yourScore) * 100.0f);
-            _puzzle.yourTotalScore = _puzzle.yourTotalScore / 2;
+            _puzzle.yourTotalScore += _puzzle.yourScore;
+            //_puzzle.yourTotalScore = _puzzle.yourTotalScore / 2;
         }
-        _puzzle.totalScore.text = _puzzle.yourTotalScore.ToString() + "%";
+        _puzzle.totalScore.text = _puzzle.yourTotalScore.ToString();
+        _puzzle.mMainMenu.gameObject.SetActive(true);
 
         Debug.Log("GameState_WIN");
     }
@@ -147,6 +148,8 @@ public class GameState_WIN : GameState
         _puzzle.buttonNext.gameObject.SetActive(false);
         _puzzle.buttonRetry.gameObject.SetActive(false);
         _puzzle.image_message.gameObject.SetActive(false);
+
+        //_puzzle.textMessage.text = "Congratulations. You have solved the puzzle.";
     }
 
     public override void Update()

@@ -112,6 +112,7 @@ public class PuzzleBoard : MonoBehaviour, IUnityAdsListener
     public AdRunningState adState = AdRunningState.NO_AD_STARTED;
     #endregion
 
+    public GameObject mMainMenu;
 
     // Start is called before the first frame update
     void Awake()
@@ -190,6 +191,8 @@ public class PuzzleBoard : MonoBehaviour, IUnityAdsListener
         _puzzleLayout2.SetSprites(_sprites);
         //ID++;
         ID = Random.Range(1, MaxImageCount);
+
+        mMainMenu.SetActive(false);
     }
 
     // Update is called once per frame
@@ -248,7 +251,7 @@ public class PuzzleBoard : MonoBehaviour, IUnityAdsListener
     {
         audioSource.Stop();
         // show popup.
-        SceneManager.LoadScene(1);
+        SceneManager.LoadScene("MainMenu");
     }
 
     private static bool IsStateInList(State state, List<Node> li)

@@ -249,7 +249,7 @@ public class Board : MonoBehaviour
 
     public GameObject[] mLines;
 
-    public Canvas mMainMenu;
+    public GameObject mMainMenu;
 
     void Start()
     {
@@ -326,7 +326,7 @@ public class Board : MonoBehaviour
         mPlayBtn.gameObject.SetActive(true);
         StartCoroutine(FadeInText(2.0f, WinText));
         mAudioSource.PlayOneShot(mWinPlayer);
-        mMainMenu.gameObject.SetActive(true);
+        mMainMenu.SetActive(true);
     }
 
     public void PlayerWin()

@@ -29,7 +29,7 @@ public class GameState_COMPARE : GameState
         _puzzle._puzzleSet2.SetActive(true);
 
         Camera.main.orthographicSize = 1000.0f;
-        Camera.main.transform.position = new Vector3(150.0f, -300.0f, -10.0f);
+        Camera.main.transform.position = new Vector3(150.0f, -420.0f, -10.0f);
         solIndex = 0;
 
         Debug.Log("GameState_COMPARE");
@@ -46,7 +46,7 @@ public class GameState_COMPARE : GameState
         _puzzle._puzzleSet2.SetActive(false);
 
         Camera.main.orthographicSize = 640.0f;
-        Camera.main.transform.position = new Vector3(0.0f, -65.0f, -10.0f);
+        Camera.main.transform.position = new Vector3(0.0f, -175.0f, -1.0f);
     }
 
     public override void Update()
