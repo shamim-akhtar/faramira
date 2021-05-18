@@ -249,7 +249,7 @@ public class Board : MonoBehaviour
 
     public GameObject[] mLines;
 
-    public GameObject mMainMenu;
+    BottomMenu mBottomMenu;
 
     void Start()
     {
@@ -265,6 +265,17 @@ public class Board : MonoBehaviour
 
         //StartCoroutine(FadeOutText(1f, WinText));
         StartCoroutine(WaitAndFadeOut(4.0f, 1.0f, WinText));
+
+        mBottomMenu = GameApp.Instance.mBottomMenu;
+        mBottomMenu.SetActive(false);
+        //mBottomMenu.btnSound.gameObject.SetActive(true);
+        //mBottomMenu.btnPrev.gameObject.SetActive(true);
+        mBottomMenu.btnPrev.onClick.AddListener(OnClick_Back);
+    }
+
+    private void OnDisable()
+    {
+        mBottomMenu.btnNext.onClick.RemoveListener(OnClick_Back);
     }
 
     IEnumerator WaitAndFadeOut(float waitTime, float timeSpeed, Text text)
@@ -326,7 +337,10 @@ public class Board : MonoBehaviour
         mPlayBtn.gameObject.SetActive(true);
         StartCoroutine(FadeInText(2.0f, WinText));
         mAudioSource.PlayOneShot(mWinPlayer);
-        mMainMenu.SetActive(true);
+
+        // change the menu.
+        mBottomMenu.SetActive(true);
+        mBottomMenu.btnNext.gameObject.SetActive(false);
     }
 
     public void PlayerWin()
@@ -345,7 +359,9 @@ public class Board : MonoBehaviour
         mPlayBtn.gameObject.SetActive(true);
         StartCoroutine(FadeInText(2.0f, WinText));
         mAudioSource.PlayOneShot(mWinAI);
-        mMainMenu.gameObject.SetActive(true);
+        // change the menu.
+        mBottomMenu.SetActive(true);
+        mBottomMenu.btnNext.gameObject.SetActive(false);
     }
 
     public void AIWin()
@@ -366,7 +382,9 @@ public class Board : MonoBehaviour
         StartCoroutine(FadeInText(2.0f, WinText));
         mAudioSource.PlayOneShot(mDraw);
 
-        mMainMenu.gameObject.SetActive(true);
+        // change the menu.
+        mBottomMenu.SetActive(true);
+        mBottomMenu.btnNext.gameObject.SetActive(false);
     }
     public void Draw()
     {
@@ -393,7 +411,7 @@ public class Board : MonoBehaviour
         }
 
         // disable the main menu.
-        mMainMenu.gameObject.SetActive(false);
+        mBottomMenu.gameObject.SetActive(false);
     }
     public void Reset()
     {

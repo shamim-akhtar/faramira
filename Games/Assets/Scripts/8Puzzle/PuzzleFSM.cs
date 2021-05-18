@@ -138,7 +138,10 @@ public class GameState_WIN : GameState
             //_puzzle.yourTotalScore = _puzzle.yourTotalScore / 2;
         }
         _puzzle.totalScore.text = _puzzle.yourTotalScore.ToString();
-        _puzzle.mMainMenu.gameObject.SetActive(true);
+
+        // change the menu.
+        _puzzle.mBottomMenu.SetActive(true);
+        _puzzle.mBottomMenu.btnNext.gameObject.SetActive(false);
 
         Debug.Log("GameState_WIN");
     }
@@ -162,7 +165,7 @@ public class GameState_WIN : GameState
             {
                 _puzzle.buttonCompare.Pressed = false;
                 m_fsm.SetCurrentState((int)StateID.COMPARE);
-                _puzzle.mMainMenu.gameObject.SetActive(false);
+                _puzzle.mBottomMenu.gameObject.SetActive(false);
             }
         }
         if (_puzzle.buttonRetry.Pressed)

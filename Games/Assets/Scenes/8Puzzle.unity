@@ -1184,7 +1184,7 @@ MonoBehaviour:
   image_sol_astar: {fileID: 1700902651}
   image_message: {fileID: 1216308124}
   textMessage: {fileID: 1225873518}
-  mMainMenu: {fileID: 644653518}
+  mBottomMenu: {fileID: 0}
 --- !u!82 &379040251
 AudioSource:
   m_ObjectHideFlags: 0
@@ -1863,15 +1863,10 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1498339623523936959, guid: beda71943aeffa340981fc4363758a83, type: 3}
       propertyPath: m_IsActive
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: beda71943aeffa340981fc4363758a83, type: 3}
---- !u!1 &644653518 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 1498339622007767807, guid: beda71943aeffa340981fc4363758a83, type: 3}
-  m_PrefabInstance: {fileID: 644653517}
-  m_PrefabAsset: {fileID: 0}
 --- !u!1 &646430586
 GameObject:
   m_ObjectHideFlags: 0

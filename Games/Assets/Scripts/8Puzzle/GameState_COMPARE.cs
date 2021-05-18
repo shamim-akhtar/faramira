@@ -84,7 +84,9 @@ public class GameState_COMPARE : GameState
         {
             _puzzle.buttonBack.Pressed = false;
             m_fsm.SetCurrentState((int)StateID.WIN);
-            _puzzle.mMainMenu.gameObject.SetActive(true);
+            // change the menu.
+            _puzzle.mBottomMenu.SetActive(true);
+            _puzzle.mBottomMenu.btnNext.gameObject.SetActive(false);
         }
     }
 }

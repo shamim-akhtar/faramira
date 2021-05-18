@@ -11,6 +11,7 @@ public class AmbientSound : MonoBehaviour
 
     public void Play(AudioClip clip, float volume = 1.0f, float pitch=1.0f)
     {
+        volume *= AudioListener.volume;
         if (active1)
         {
             Stop(mAudioSource1);

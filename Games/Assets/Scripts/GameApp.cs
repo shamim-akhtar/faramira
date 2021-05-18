@@ -7,11 +7,17 @@ using UnityEngine.SceneManagement;
 public class GameApp : Singleton<GameApp>
 {
     public AmbientSound mAmbientSound;
+    public BottomMenu mBottomMenu;
     public AudioClip[] mAudioClips;
+
+    Dictionary<string, AudioClip> sceneAudios = new Dictionary<string, AudioClip>();
 
     void Start()
     {
         SceneManager.LoadScene("_splash_screen");
+        sceneAudios.Add("MainMenu", mAudioClips[0]);
+        sceneAudios.Add("TicTacToe", mAudioClips[1]);
+        sceneAudios.Add("8Puzzle", mAudioClips[2]);
     }
 
     void Update()
@@ -34,5 +40,18 @@ public class GameApp : Singleton<GameApp>
     void OnSceneLoaded(Scene scene, LoadSceneMode mode)
     {
         Debug.Log("Loaded: " + scene.name);
+        if (sceneAudios.ContainsKey(scene.name))
+        {
+            AudioClip clip = sceneAudios[scene.name];
+            if (clip != null)
+            {
+                PlaySceneAudio(clip);
+            }
+        }
+    }
+
+    void PlaySceneAudio(AudioClip clip)
+    {
+        mAmbientSound.Play(clip);
     }
 }

@@ -8,20 +8,21 @@ public class MainMenu : MonoBehaviour
 {
     string GameToLoad;
 
-    public Button btnPrev;
-    public Button btnNext;
-    public Button btnTrophy;
-    public Button btnSound;
-    public Button btnLeader;
-
     // Start is called before the first frame update
     void Start()
     {
-        btnPrev.gameObject.SetActive(false);
-        btnNext.gameObject.SetActive(false);
-        btnTrophy.gameObject.SetActive(false);
-        btnSound.gameObject.SetActive(true);
-        btnLeader.gameObject.SetActive(false);
+        GameApp.Instance.mBottomMenu.btnPrev.gameObject.SetActive(false);
+        GameApp.Instance.mBottomMenu.btnNext.gameObject.SetActive(false);
+        GameApp.Instance.mBottomMenu.btnTrophy.gameObject.SetActive(false);
+        GameApp.Instance.mBottomMenu.btnSound.gameObject.SetActive(true);
+        GameApp.Instance.mBottomMenu.btnLeader.gameObject.SetActive(false);
+
+        GameApp.Instance.mBottomMenu.btnNext.onClick.AddListener(OnClick_Next);
+    }
+
+    private void OnDisable()
+    {
+        GameApp.Instance.mBottomMenu.btnNext.onClick.RemoveListener(OnClick_Next);
     }
 
     // Update is called once per frame
@@ -33,13 +34,13 @@ public class MainMenu : MonoBehaviour
     public void OnClick_Play_TicTacToe()
     {
         GameToLoad = "TicTacToe";
-        btnNext.gameObject.SetActive(true);
+        GameApp.Instance.mBottomMenu.btnNext.gameObject.SetActive(true);
     }
 
     public void OnClick_Play_8Puzzle()
     {
         GameToLoad = "8Puzzle";
-        btnNext.gameObject.SetActive(true);
+        GameApp.Instance.mBottomMenu.btnNext.gameObject.SetActive(true);
     }
 
     public void OnClick_Next()

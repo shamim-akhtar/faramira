@@ -118,7 +118,7 @@ public class PuzzleBoard : MonoBehaviour
 #endregion
 #endif
 
-    public GameObject mMainMenu;
+    public BottomMenu mBottomMenu;
 
     // Start is called before the first frame update
     void Awake()
@@ -163,6 +163,10 @@ public class PuzzleBoard : MonoBehaviour
         _fsm.SetCurrentState((int)GameState.StateID.FADEIN);
         audioSource.Play();
 
+        mBottomMenu = GameApp.Instance.mBottomMenu;
+        mBottomMenu.SetActive(false);
+        mBottomMenu.btnPrev.onClick.AddListener(LoadMenu);
+
 #if FARAMIRA_USE_ADS
         // initialize ADs
 #if UNITY_IPHONE
@@ -175,6 +179,11 @@ public class PuzzleBoard : MonoBehaviour
         Advertisement.Initialize(GameID_Android, testMode);
 #endif
 #endif
+    }
+
+    private void OnDisable()
+    {
+        mBottomMenu.btnNext.onClick.RemoveListener(LoadMenu);
     }
 
 #if FARAMIRA_USE_ADS

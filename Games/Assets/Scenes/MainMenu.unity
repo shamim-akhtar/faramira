@@ -474,11 +474,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b40e588a9e1d0d14daa50bb677569a18, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  btnPrev: {fileID: 1498339621651310309}
-  btnNext: {fileID: 1498339621651310308}
-  btnTrophy: {fileID: 1498339621651310307}
-  btnSound: {fileID: 1498339621651310306}
-  btnLeader: {fileID: 1498339621651310305}
 --- !u!1 &931181073
 GameObject:
   m_ObjectHideFlags: 0
@@ -1132,7 +1127,7 @@ PrefabInstance:
     - target: {fileID: 1498339622382714251, guid: beda71943aeffa340981fc4363758a83, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
       value: 
-      objectReference: {fileID: 927342968}
+      objectReference: {fileID: 0}
     - target: {fileID: 1498339622382714251, guid: beda71943aeffa340981fc4363758a83, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_CallState
       value: 2
@@ -1303,7 +1298,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1498339623523936959, guid: beda71943aeffa340981fc4363758a83, type: 3}
       propertyPath: m_IsActive
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: beda71943aeffa340981fc4363758a83, type: 3}

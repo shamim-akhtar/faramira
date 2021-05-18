@@ -1704,15 +1704,10 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1498339623523936959, guid: beda71943aeffa340981fc4363758a83, type: 3}
       propertyPath: m_IsActive
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: beda71943aeffa340981fc4363758a83, type: 3}
---- !u!1 &1170899176 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 1498339622007767807, guid: beda71943aeffa340981fc4363758a83, type: 3}
-  m_PrefabInstance: {fileID: 1170899175}
-  m_PrefabAsset: {fileID: 0}
 --- !u!1 &1215181110
 GameObject:
   m_ObjectHideFlags: 0
@@ -2261,11 +2256,11 @@ MonoBehaviour:
   mPlayBtn: {fileID: 1877473336}
   timeMultiplier: 1
   mAudioSource: {fileID: 1739594025}
-  mWinPlayer: {fileID: 8300000, guid: baa5fa1d360cc7e4e952a0734d37f859, type: 3}
-  mWinAI: {fileID: 8300000, guid: 6b7935c850cea814a93952b454ae29c9, type: 3}
-  mDraw: {fileID: 8300000, guid: 6a6a4e1d94afa6246b64784f3f30e808, type: 3}
-  mClick: {fileID: 8300000, guid: 59f886ee7745a994193c3d8d64fab93f, type: 3}
-  mCancel: {fileID: 8300000, guid: 8a4c4e6419f4e0942b5a6d13f7af319f, type: 3}
+  mWinPlayer: {fileID: 8300000, guid: 9aa497feb882b724ca930205c3f4dd25, type: 3}
+  mWinAI: {fileID: 8300000, guid: 6c84e4992fcb48c49b130c63d60314ca, type: 3}
+  mDraw: {fileID: 8300000, guid: 1cf39195fd2f08a4782c62ee11a92be4, type: 3}
+  mClick: {fileID: 8300000, guid: 1f7fcea8327eb1749a31669e08132e07, type: 3}
+  mCancel: {fileID: 8300000, guid: 645ef7444cc28304ea5379069fbbcd47, type: 3}
   mLines:
   - {fileID: 2027113783}
   - {fileID: 690069056}
@@ -2275,7 +2270,6 @@ MonoBehaviour:
   - {fileID: 477619130}
   - {fileID: 374190478}
   - {fileID: 921815478}
-  mMainMenu: {fileID: 1170899176}
 --- !u!82 &1739594025
 AudioSource:
   m_ObjectHideFlags: 0
