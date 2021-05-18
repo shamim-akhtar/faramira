@@ -275,7 +275,7 @@ public class Board : MonoBehaviour
 
     private void OnDisable()
     {
-        mBottomMenu.btnNext.onClick.RemoveListener(OnClick_Back);
+        mBottomMenu.btnPrev.onClick.RemoveListener(OnClick_Back);
     }
 
     IEnumerator WaitAndFadeOut(float waitTime, float timeSpeed, Text text)

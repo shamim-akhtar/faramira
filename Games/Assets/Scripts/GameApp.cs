@@ -18,6 +18,7 @@ public class GameApp : Singleton<GameApp>
         sceneAudios.Add("MainMenu", mAudioClips[0]);
         sceneAudios.Add("TicTacToe", mAudioClips[1]);
         sceneAudios.Add("8Puzzle", mAudioClips[2]);
+        sceneAudios.Add("Maze", mAudioClips[3]);
     }
 
     void Update()
