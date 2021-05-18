@@ -7,7 +7,11 @@ using Puzzle;
 using UnityEngine.SceneManagement;
 using UnityEngine.Advertisements;
 
+#if FARAMIRA_USE_ADS
 public class PuzzleBoard : MonoBehaviour, IUnityAdsListener
+#else
+public class PuzzleBoard : MonoBehaviour
+#endif
 {
     public int PuzzleRowsOrCols = 3;
     public string FrameName1 = "frame";
@@ -92,7 +96,8 @@ public class PuzzleBoard : MonoBehaviour, IUnityAdsListener
 
     public Text textMessage;
 
-    #region Unity Ads
+#if FARAMIRA_USE_ADS
+#region Unity Ads
     public readonly string GameID_Android = "3605936";
     public readonly string GameID_iOS = "3605937";
     public readonly string placementId = "ingame_banner";
@@ -110,7 +115,8 @@ public class PuzzleBoard : MonoBehaviour, IUnityAdsListener
     }
     [HideInInspector]
     public AdRunningState adState = AdRunningState.NO_AD_STARTED;
-    #endregion
+#endregion
+#endif
 
     public GameObject mMainMenu;
 
@@ -133,7 +139,7 @@ public class PuzzleBoard : MonoBehaviour, IUnityAdsListener
         _puzzleLayout2 = new PuzzleLayout(170.0f, 170.0f, PuzzleRowsOrCols);
         _puzzleLayout2.gameObject.transform.SetParent(_puzzleSet2.transform);
 
-        _puzzleSet2.transform.position = new Vector3(0.0f, -650.0f, 0.0f);
+        _puzzleSet2.transform.position = new Vector3(0.0f, -600.0f, 0.0f);
         _puzzleSet2.SetActive(false);
 
         LoadPuzzleImage();
@@ -157,6 +163,7 @@ public class PuzzleBoard : MonoBehaviour, IUnityAdsListener
         _fsm.SetCurrentState((int)GameState.StateID.FADEIN);
         audioSource.Play();
 
+#if FARAMIRA_USE_ADS
         // initialize ADs
 #if UNITY_IPHONE
         Advertisement.AddListener (this);
@@ -167,8 +174,10 @@ public class PuzzleBoard : MonoBehaviour, IUnityAdsListener
         Advertisement.AddListener (this);
         Advertisement.Initialize(GameID_Android, testMode);
 #endif
+#endif
     }
 
+#if FARAMIRA_USE_ADS
     public void Start()
     {
         Debug.Log("Unity Ads initialized: " + Advertisement.isInitialized);
@@ -179,6 +188,7 @@ public class PuzzleBoard : MonoBehaviour, IUnityAdsListener
     {
         Advertisement.Show();
     }
+#endif
 
     public void LoadPuzzleImage()
     {
@@ -192,7 +202,7 @@ public class PuzzleBoard : MonoBehaviour, IUnityAdsListener
         //ID++;
         ID = Random.Range(1, MaxImageCount);
 
-        mMainMenu.SetActive(false);
+        //mMainMenu.SetActive(false);
     }
 
     // Update is called once per frame
@@ -341,6 +351,7 @@ public class PuzzleBoard : MonoBehaviour, IUnityAdsListener
     }
 
 
+#if FARAMIRA_USE_ADS
     public void ShowSolutionAd()
     {
         Advertisement.Show(adsPlacementRewarded);
@@ -380,6 +391,7 @@ public class PuzzleBoard : MonoBehaviour, IUnityAdsListener
             adState = AdRunningState.FAILED;
         }
     }
+#endif
 
     private IEnumerator ShowTextMessage_Coroutine(float fadeInDuration = 2.0f, float showDuration = 3.0f, float fadeOutDuration = 2.0f)
     {

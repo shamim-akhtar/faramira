@@ -46,7 +46,7 @@ public class GameState_COMPARE : GameState
         _puzzle._puzzleSet2.SetActive(false);
 
         Camera.main.orthographicSize = 640.0f;
-        Camera.main.transform.position = new Vector3(0.0f, -175.0f, -1.0f);
+        Camera.main.transform.position = new Vector3(0.0f, -200.0f, -1.0f);
     }
 
     public override void Update()
@@ -84,6 +84,7 @@ public class GameState_COMPARE : GameState
         {
             _puzzle.buttonBack.Pressed = false;
             m_fsm.SetCurrentState((int)StateID.WIN);
+            _puzzle.mMainMenu.gameObject.SetActive(true);
         }
     }
 }

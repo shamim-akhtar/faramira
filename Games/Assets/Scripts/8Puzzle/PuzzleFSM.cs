@@ -118,8 +118,10 @@ public class GameState_WIN : GameState
 
         _puzzle.buttonNext.gameObject.SetActive(true);
         _puzzle.buttonRetry.gameObject.SetActive(true);
-
-        _puzzle.buttonCompare.gameObject.SetActive(true);
+        if (_puzzle.m_astarSolved)
+        {
+            _puzzle.buttonCompare.gameObject.SetActive(true);
+        }
         _puzzle.image_message.gameObject.SetActive(true);
 
         _puzzle._puzzleLayout.SetState(new Puzzle.State(_puzzle.PuzzleRowsOrCols));
@@ -156,8 +158,12 @@ public class GameState_WIN : GameState
     {
         if (_puzzle.buttonCompare.Pressed)
         {
-            _puzzle.buttonCompare.Pressed = false;
-            m_fsm.SetCurrentState((int)StateID.COMPARE);
+            if (_puzzle.m_astarSolved)
+            {
+                _puzzle.buttonCompare.Pressed = false;
+                m_fsm.SetCurrentState((int)StateID.COMPARE);
+                _puzzle.mMainMenu.gameObject.SetActive(false);
+            }
         }
         if (_puzzle.buttonRetry.Pressed)
         {
@@ -179,6 +185,7 @@ public class GameState_SHOW_AD : GameState
     }
     public override void Enter()
     {
+#if FARAMIRA_USE_ADS
 #if UNITY_IPHONE
         _puzzle.ShowSolutionAd();
 #endif
@@ -189,6 +196,7 @@ public class GameState_SHOW_AD : GameState
 
 #if UNITY_WEBGL
 #endif
+#endif
         Debug.Log("GameState_SHOW_AD");
     }
 
@@ -198,6 +206,8 @@ public class GameState_SHOW_AD : GameState
 
     public override void Update()
     {
+#if FARAMIRA_USE_ADS
+
 #if UNITY_IPHONE
         if (_puzzle.adState == PuzzleBoard.AdRunningState.SUCCESS)
         {
@@ -232,6 +242,9 @@ public class GameState_SHOW_AD : GameState
 #endif
 
 #if UNITY_STANDALONE
+        m_fsm.SetCurrentState((int)StateID.NEXT_PUZZLE_IMAGE);
+#endif
+#else
         m_fsm.SetCurrentState((int)StateID.NEXT_PUZZLE_IMAGE);
 #endif
     }
@@ -326,8 +339,11 @@ public class GameState_SHOW_REWARD_AD : GameState
     }
     public override void Enter()
     {
+#if FARAMIRA_USE_ADS
+
 #if (UNITY_ANDROID) || (UNITY_IOS)
         _puzzle.ShowSolutionAd();
+#endif
 #endif
     }
 
@@ -337,6 +353,8 @@ public class GameState_SHOW_REWARD_AD : GameState
 
     public override void Update()
     {
+#if FARAMIRA_USE_ADS
+
 #if (UNITY_ANDROID) || (UNITY_IOS)
         if(_puzzle.adState == PuzzleBoard.AdRunningState.SUCCESS)
         {
@@ -348,6 +366,9 @@ public class GameState_SHOW_REWARD_AD : GameState
             _puzzle.adState = PuzzleBoard.AdRunningState.NO_AD_STARTED;
             m_fsm.SetCurrentState((int)StateID.PLAYING);
         }
+#else
+        m_fsm.SetCurrentState((int)StateID.ASTAR_SOLUTION);
+#endif
 #else
         m_fsm.SetCurrentState((int)StateID.ASTAR_SOLUTION);
 #endif
