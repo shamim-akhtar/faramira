@@ -19,6 +19,8 @@ public class GameState_RANDOMIZE : GameState
         Debug.Log("GameState_RANDOMIZE - Depth " + _depth);
         _puzzle.audioSource.PlayOneShot(_puzzle.audioRandomize);
         _puzzle.buttonRetry.gameObject.SetActive(false);
+
+        _puzzle.mBottomMenu.SetActive(false);
     }
 
     public override void Exit()

@@ -121,8 +121,8 @@ public class GameState_WIN : GameState
         if (_puzzle.m_astarSolved)
         {
             _puzzle.buttonCompare.gameObject.SetActive(true);
+            _puzzle.image_message.gameObject.SetActive(true);
         }
-        _puzzle.image_message.gameObject.SetActive(true);
 
         _puzzle._puzzleLayout.SetState(new Puzzle.State(_puzzle.PuzzleRowsOrCols));
 
@@ -141,7 +141,7 @@ public class GameState_WIN : GameState
 
         // change the menu.
         _puzzle.mBottomMenu.SetActive(true);
-        _puzzle.mBottomMenu.btnNext.gameObject.SetActive(false);
+        _puzzle.mBottomMenu.btnPrev.gameObject.SetActive(true);
 
         Debug.Log("GameState_WIN");
     }
@@ -165,7 +165,7 @@ public class GameState_WIN : GameState
             {
                 _puzzle.buttonCompare.Pressed = false;
                 m_fsm.SetCurrentState((int)StateID.COMPARE);
-                _puzzle.mBottomMenu.gameObject.SetActive(false);
+                _puzzle.mBottomMenu.SetActive(false);
             }
         }
         if (_puzzle.buttonRetry.Pressed)

@@ -164,7 +164,8 @@ public class PuzzleBoard : MonoBehaviour
         audioSource.Play();
 
         mBottomMenu = GameApp.Instance.mBottomMenu;
-        mBottomMenu.SetActive(false);
+        mBottomMenu.SetActive(true);
+        mBottomMenu.btnNext.gameObject.SetActive(false);
         mBottomMenu.btnPrev.onClick.AddListener(LoadMenu);
 
 #if FARAMIRA_USE_ADS
@@ -211,7 +212,7 @@ public class PuzzleBoard : MonoBehaviour
         //ID++;
         ID = Random.Range(1, MaxImageCount);
 
-        //mMainMenu.SetActive(false);
+        //mBottomMenu.SetActive(false);
     }
 
     // Update is called once per frame
