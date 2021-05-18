@@ -13,11 +13,9 @@ public class MainMenu : MonoBehaviour
     void Start()
     {
         mBottomMenu = GameApp.Instance.mBottomMenu;
+        mBottomMenu.SetActive(true);
         mBottomMenu.btnPrev.gameObject.SetActive(false);
         mBottomMenu.btnNext.gameObject.SetActive(false);
-        mBottomMenu.btnTrophy.gameObject.SetActive(false);
-        mBottomMenu.btnSound.gameObject.SetActive(true);
-        mBottomMenu.btnLeader.gameObject.SetActive(false);
 
         mBottomMenu.btnNext.onClick.AddListener(OnClick_Next);
     }

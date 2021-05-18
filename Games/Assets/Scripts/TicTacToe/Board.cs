@@ -411,7 +411,7 @@ public class Board : MonoBehaviour
         }
 
         // disable the main menu.
-        mBottomMenu.gameObject.SetActive(false);
+        mBottomMenu.SetActive(false);
     }
     public void Reset()
     {
