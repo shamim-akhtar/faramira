@@ -8,21 +8,23 @@ public class MainMenu : MonoBehaviour
 {
     string GameToLoad;
 
+    BottomMenu mBottomMenu;
     // Start is called before the first frame update
     void Start()
     {
-        GameApp.Instance.mBottomMenu.btnPrev.gameObject.SetActive(false);
-        GameApp.Instance.mBottomMenu.btnNext.gameObject.SetActive(false);
-        GameApp.Instance.mBottomMenu.btnTrophy.gameObject.SetActive(false);
-        GameApp.Instance.mBottomMenu.btnSound.gameObject.SetActive(true);
-        GameApp.Instance.mBottomMenu.btnLeader.gameObject.SetActive(false);
+        mBottomMenu = GameApp.Instance.mBottomMenu;
+        mBottomMenu.btnPrev.gameObject.SetActive(false);
+        mBottomMenu.btnNext.gameObject.SetActive(false);
+        mBottomMenu.btnTrophy.gameObject.SetActive(false);
+        mBottomMenu.btnSound.gameObject.SetActive(true);
+        mBottomMenu.btnLeader.gameObject.SetActive(false);
 
-        GameApp.Instance.mBottomMenu.btnNext.onClick.AddListener(OnClick_Next);
+        mBottomMenu.btnNext.onClick.AddListener(OnClick_Next);
     }
 
     private void OnDisable()
     {
-        GameApp.Instance.mBottomMenu.btnNext.onClick.RemoveListener(OnClick_Next);
+        mBottomMenu.btnNext.onClick.RemoveListener(OnClick_Next);
     }
 
     // Update is called once per frame

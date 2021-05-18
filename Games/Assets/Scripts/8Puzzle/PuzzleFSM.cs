@@ -141,7 +141,8 @@ public class GameState_WIN : GameState
 
         // change the menu.
         _puzzle.mBottomMenu.SetActive(true);
-        _puzzle.mBottomMenu.btnPrev.gameObject.SetActive(true);
+        //_puzzle.mBottomMenu.btnPrev.gameObject.SetActive(true);
+        _puzzle.mBottomMenu.btnNext.gameObject.SetActive(false);
 
         Debug.Log("GameState_WIN");
     }

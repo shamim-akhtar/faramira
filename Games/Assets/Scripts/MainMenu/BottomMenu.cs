@@ -13,6 +13,7 @@ public class BottomMenu : MonoBehaviour
     public Button btnTrophy;
     public Button btnSound;
     public Button btnLeader;
+    public Slider sliderVolume;
 
     // Start is called before the first frame update
     void Start()
@@ -22,6 +23,9 @@ public class BottomMenu : MonoBehaviour
         btnTrophy.gameObject.SetActive(false);
         btnSound.gameObject.SetActive(false);
         btnLeader.gameObject.SetActive(false);
+        sliderVolume.gameObject.SetActive(false);
+
+        btnSound.onClick.AddListener(OnClick_Sound);
     }
 
     // Update is called once per frame
@@ -36,7 +40,7 @@ public class BottomMenu : MonoBehaviour
         {
             btnPrev.gameObject.SetActive(true);
             btnTrophy.gameObject.SetActive(false);
-            btnSound.gameObject.SetActive(true);
+            btnSound.gameObject.SetActive(false);
             btnLeader.gameObject.SetActive(false);
             btnNext.gameObject.SetActive(true);
         }
@@ -50,23 +54,23 @@ public class BottomMenu : MonoBehaviour
         }
     }
 
-    //public void OnClick_Play_TicTacToe()
-    //{
-    //    GameToLoad = "TicTacToe";
-    //    btnNext.gameObject.SetActive(true);
-    //}
+    public IEnumerator Coroutine_FadeIn(Image img, float t = 1.0f)
+    {
+        float dt = 0.0f;
+        while (dt <= t)
+        {
+            dt += Time.deltaTime;
+            Color c = img.color;
+            c.a = dt / t;
+            img.color = c;
+            yield return new WaitForEndOfFrame();
+        }
+    }
 
-    //public void OnClick_Play_8Puzzle()
-    //{
-    //    GameToLoad = "8Puzzle";
-    //    btnNext.gameObject.SetActive(true);
-    //}
-
-    //public void OnClick_Next()
-    //{
-    //    if(GameToLoad != null)
-    //    {
-    //        SceneManager.LoadScene(GameToLoad);
-    //    }
-    //}
+    public void OnClick_Sound()
+    {
+        //sliderVolume.gameObject.SetActive(true);
+        //StartCoroutine(Coroutine_FadeIn(sliderVolume.fillRect.GetComponent<Image>(), 1.0f));
+        //StartCoroutine(Coroutine_FadeIn(sliderVolume.handleRect.GetComponent<Image>(), 1.0f));
+    }
 }
