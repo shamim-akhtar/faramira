@@ -20,4 +20,7 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/8Puzzle.unity
     guid: d80b4252b893a4243b5254c27a560b8e
+  - enabled: 1
+    path: Assets/Scenes/Maze.unity
+    guid: 8897714c6ed7f904ea341dc2b8881efc
   m_configObjects: {}

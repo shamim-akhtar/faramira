@@ -43,6 +43,12 @@ public class MainMenu : MonoBehaviour
         GameApp.Instance.mBottomMenu.btnNext.gameObject.SetActive(true);
     }
 
+    public void OnClick_Play_Maze()
+    {
+        GameToLoad = "Maze";
+        GameApp.Instance.mBottomMenu.btnNext.gameObject.SetActive(true);
+    }
+
     public void OnClick_Next()
     {
         if(GameToLoad != null)
