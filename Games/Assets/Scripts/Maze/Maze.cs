@@ -11,14 +11,14 @@ public class Maze
         RIGHT,
         DOWN,
         LEFT,
-        //NONE,
+        NONE,
     };
     public class Cell
     {
         public int x;
         public int y;
         public bool visited = false;
-        private bool []flag = { true, true, true, true };
+        public bool []flag = { true, true, true, true };
 
         public delegate void DelegateSetDirFlag(int x, int y, Directions dir, bool f);
         public DelegateSetDirFlag OnSetDirFlag;
@@ -35,6 +35,8 @@ public class Maze
             flag[(int)dir] = f;
             OnSetDirFlag?.Invoke(x, y, dir, f);
         }
+
+
     }
 
     private int _rows;
@@ -139,13 +141,13 @@ public class Maze
 
     public void RemoveCellWall(int x, int y, Directions dir)
     {
-        //if (dir != Directions.NONE)
-        //{
+        if (dir != Directions.NONE)
+        {
             Cell cell = GetCell(x, y);
             cell.SetDirFlag(dir, false);
-        //}
+        }
 
-        Directions opp = Directions.UP;//= Directions.NONE;
+        Directions opp = Directions.NONE;
         switch (dir)
         {
             case Directions.UP:
@@ -178,10 +180,10 @@ public class Maze
                 break;
         }
 
-        //if (opp != Directions.NONE)
-        //{
+        if (opp != Directions.NONE)
+        {
             Cell cell1 = GetCell(x, y);
             cell1.SetDirFlag(opp, false);
-        //}
+        }
     }
 }

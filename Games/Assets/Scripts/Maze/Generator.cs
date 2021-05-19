@@ -5,18 +5,18 @@ using System;
 
 public class Generator : MonoBehaviour
 {
-    private int START_X = 0;
-    private int START_Y = 0;
+    public int START_X = 0;
+    public int START_Y = 0;
 
     public int rows = 15;
     public int cols = 11;
     public GameObject mCellPrefab;
-    public GameObject mMousePrefab;
 
     public float generationTimeStep = 0.01f;
     GameObject[,] mCellGameObjs;
-    GameObject mMouse;
-    Maze maze;
+    public GameObject mMouse;
+
+    public Maze maze;
 
     Stack<Maze.Cell> _stack = new Stack<Maze.Cell>();
     int mousex = 0;
@@ -41,9 +41,7 @@ public class Generator : MonoBehaviour
             }
         }
 
-        mMouse = Instantiate(mMousePrefab);
         SetMousePosition(0, 0);
-        //mMouse.transform.position = new Vector3(START_X, START_Y, 0.0f);
 
         _stack.Push(maze.GetCell(mousex, mousey));
         //StartCoroutine(Coroutine_Generate());
@@ -51,6 +49,23 @@ public class Generator : MonoBehaviour
         maze.RemoveCellWall(0, 0, Maze.Directions.LEFT);
         maze.RemoveCellWall(cols-1, rows-1, Maze.Directions.RIGHT);
         StartCoroutine(Coroutine_Generate(generationTimeStep));
+    }
+
+    public void HighlightCell(int i, int j, bool flag)
+    {
+        mCellGameObjs[i, j].transform.GetChild(8).gameObject.SetActive(flag);
+    }
+
+    public void RemoveAllHightlights()
+    {
+
+        for (int i = 0; i < cols; ++i)
+        {
+            for (int j = 0; j < rows; ++j)
+            {
+                mCellGameObjs[i, j].transform.GetChild(8).gameObject.SetActive(false);
+            }
+        }
     }
 
     public void OnCellSetDirFlag(int x, int y, Maze.Directions dir, bool f)
