@@ -43,6 +43,9 @@ public class PlayerMovement : MonoBehaviour
         mx = mJoystick.Horizontal * Time.deltaTime;
         my = mJoystick.Vertical * Time.deltaTime;
 
+        //mx = mJoystick.Direction.x;
+        //my = mJoystick.Direction.y;
+
         if (Input.GetKeyDown(KeyCode.Space))
         {
             StartCoroutine(Coroutine_Print(1.0f));
@@ -86,38 +89,54 @@ public class PlayerMovement : MonoBehaviour
         if (!cell.flag[0])
         {
             // can go down.
-            if (j > 0 && my < 0.0f /*&& Mathf.Abs(my) > Mathf.Abs(mx)*/)
+            if (j > 0 && my < 0.0f/* && Mathf.Abs(my) > Mathf.Abs(mx)*/)
             {
-                StartCoroutine(Coroutine_MoveOverSeconds(mPlayer, new Vector3(i + mGenerator.START_X,
-                    j + mGenerator.START_Y - 1, 0.0f), 0.5f));
+                Vector3 a = mPlayer.transform.position;
+                Vector3 b = new Vector3(i + mGenerator.START_X, j + mGenerator.START_Y - 1, 0.0f);
+
+                Debug.Log(a + ", " + b);
+                StartCoroutine(Coroutine_MoveOverSeconds(mPlayer, 
+                    new Vector3(
+                        i + mGenerator.START_X,
+                        j + mGenerator.START_Y - 1, 
+                        0.0f), 
+                    1.0f/mSpeed));
             }
         }
         if (!cell.flag[1])
         {
             // can go right.
-            if (i < mGenerator.cols - 1 && mx > 0.0f /*&& Mathf.Abs(mx) > Mathf.Abs(my)*/)
+            if (i < mGenerator.cols - 1 && mx > 0.0f/* && Mathf.Abs(mx) > Mathf.Abs(my)*/)
             {
                 StartCoroutine(Coroutine_MoveOverSeconds(mPlayer, new Vector3(i + mGenerator.START_X + 1,
-                    j + mGenerator.START_Y, 0.0f), 0.5f));
+                    j + mGenerator.START_Y, 0.0f), 1.0f / mSpeed));
             }
         }
         if (!cell.flag[2])
         {
             // can go up
-            if (j < mGenerator.rows - 1 && my > 0.0f /*&& Mathf.Abs(my) > Mathf.Abs(mx)*/)
+            if (j < mGenerator.rows - 1 && my > 0.0f/* && Mathf.Abs(my) > Mathf.Abs(mx)*/)
             {
                 StartCoroutine(Coroutine_MoveOverSeconds(mPlayer, new Vector3(i + mGenerator.START_X,
-                    j + mGenerator.START_Y + 1, 0.0f), 0.5f));
+                    j + mGenerator.START_Y + 1, 0.0f), 1.0f / mSpeed));
             }
         }
         if (!cell.flag[3])
         {
             // can go left.
-            if (i > 0 && mx < 0.0f /*&& Mathf.Abs(mx) > Mathf.Abs(my)*/)
+            if (i > 0 && mx < 0.0f/* && Mathf.Abs(mx) > Mathf.Abs(my)*/)
             {
                 StartCoroutine(Coroutine_MoveOverSeconds(mPlayer, new Vector3(i + mGenerator.START_X - 1,
-                    j + mGenerator.START_Y, 0.0f), 0.5f));
+                    j + mGenerator.START_Y, 0.0f), 1.0f / mSpeed));
             }
+        }
+
+        if(cell.x == mGenerator.cols - 1 && cell.y == mGenerator.rows - 1)
+        {
+            Debug.Log("Win");
+
+            StartCoroutine(Coroutine_MoveOverSeconds(mPlayer, new Vector3(i + mGenerator.START_X + 1,
+                j + mGenerator.START_Y, 0.0f), 1.0f / mSpeed));
         }
     }
 
