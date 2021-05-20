@@ -49,7 +49,6 @@ public class BoardMemory : MonoBehaviour
         mCardLayout.Add(new Tuple<int, int>(4, 3));
         mCardLayout.Add(new Tuple<int, int>(4, 4));
         mCardLayout.Add(new Tuple<int, int>(4, 5));
-        //mCardLayout.Add(new Tuple<int, int>(4, 6));
     }
 
     // Start is called before the first frame update
@@ -57,25 +56,6 @@ public class BoardMemory : MonoBehaviour
     {
         CreateLevel(mLevel - 1);
     }
-
-    //private void CreateSprite(GameObject gameObject, int id)
-    //{
-    //    var spriteRenderer = gameObject.AddComponent<SpriteRenderer>();
-    //    //var sprite = Resources.Load<Sprite>("Images/Memory/2D");
-    //    var sprite = Resources.Load<Sprite>("Images/Memory/" + SPRITE_NAMES[id]);
-    //    sprite.name = SPRITE_NAMES[id];
-    //    spriteRenderer.sprite = sprite;
-    //    spriteRenderer.name = SPRITE_NAMES[id];
-    //}
-
-    //private void CreateCardMask(GameObject gameObject, int id)
-    //{
-    //    var spriteRenderer = gameObject.AddComponent<SpriteRenderer>();
-    //    var sprite = Resources.Load<Sprite>("Images/Memory/" + SPRITE_MASK_NAMES[id]);
-    //    sprite.name = SPRITE_MASK_NAMES[id];
-    //    spriteRenderer.sprite = sprite;
-    //    spriteRenderer.name = SPRITE_MASK_NAMES[id];
-    //}
 
     Sprite LoadSprite(string name)
     {
@@ -104,8 +84,10 @@ public class BoardMemory : MonoBehaviour
         for (int i = 0; i < mCardMasks.Count; ++i)
         {
             mCards[i].transform.parent = null;
+            Destroy(mCards[i]);
             mCards[i] = null;
             mCardMasks[i].transform.parent = null;
+            Destroy(mCardMasks[i]);
             mCardMasks[i] = null;
         }
         for (int i = 0; i < mCardSprites.Count; ++i)
@@ -119,9 +101,9 @@ public class BoardMemory : MonoBehaviour
 
     public void CreateLevel(int level)
     {
-        //DestroyAll();
+        DestroyAll();
 
-        if(level >= mCardLayout.Count)
+        if (level >= mCardLayout.Count)
         {
             Debug.Log("Completed all levels for this game.");
             return;
@@ -188,8 +170,6 @@ public class BoardMemory : MonoBehaviour
         {
             var spriteRenderer = mCardMasks[i].GetComponent<SpriteRenderer>();
             spriteRenderer.sprite = mCardMaskSprite;
-            //spriteRenderer.name = mCardMaskSprite.name;
-            //yield return new WaitForSeconds(0.05f);
             yield return null;
         }
     }
