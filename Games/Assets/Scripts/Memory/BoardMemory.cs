@@ -49,6 +49,7 @@ public class BoardMemory : MonoBehaviour
         mCardLayout.Add(new Tuple<int, int>(4, 3));
         mCardLayout.Add(new Tuple<int, int>(4, 4));
         mCardLayout.Add(new Tuple<int, int>(4, 5));
+        mCardLayout.Add(new Tuple<int, int>(4, 6));
     }
 
     // Start is called before the first frame update
@@ -122,13 +123,21 @@ public class BoardMemory : MonoBehaviour
             {
                 string name = i + "_" + j;
                 GameObject go = new GameObject(name);
+                go.tag = "Card";
                 go.AddComponent<SpriteRenderer>();
+                BoxCollider2D bc = go.AddComponent<BoxCollider2D>();
+                bc.offset = new Vector2(0, 0);
+                bc.size = new Vector2(SPRITE_W, SPRITE_H);
                 go.transform.position = new Vector3(i * SPRITE_W + start_x, j * SPRITE_H + start_y, 0.0f);
                 go.transform.parent = transform;
                 mCards.Add(go);
 
                 GameObject gom = new GameObject(name + "_mask");
+                gom.tag = "Mask";
                 gom.AddComponent<SpriteRenderer>();
+                bc = gom.AddComponent<BoxCollider2D>();
+                bc.offset = new Vector2(0, 0);
+                bc.size = new Vector2(SPRITE_W, SPRITE_H);
                 gom.transform.position = new Vector3(i * SPRITE_W + start_x, j * SPRITE_H + start_y, -1.0f);
                 gom.transform.parent = transform;
                 mCardMasks.Add(gom);
@@ -204,6 +213,29 @@ public class BoardMemory : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.LeftControl))
         {
             CreateLevel(UnityEngine.Random.Range(0, mCardLayout.Count - 1));
+        }
+
+        HandleMouseClick();
+    }
+
+    void RemoveMask(GameObject obj)
+    {
+        obj.SetActive(false);
+    }
+
+    void HandleMouseClick()
+    {
+        if (Input.GetMouseButtonDown(0))
+        {
+            GameObject selected = Puzzle.Utils.Pick2D();
+            if (selected != null)
+            {
+                Debug.Log("Selected: " + selected.name);
+                if (selected.tag == "Mask")
+                {
+                    RemoveMask(selected);
+                }
+            }
         }
     }
 }
