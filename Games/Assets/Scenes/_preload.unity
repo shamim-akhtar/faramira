@@ -938,10 +938,16 @@ MonoBehaviour:
   mAmbientSound: {fileID: 473031221}
   mBottomMenu: {fileID: 31600190}
   mAudioClips:
-  - {fileID: 8300000, guid: 52df154502e7e214996d1a88c6767edd, type: 3}
-  - {fileID: 8300000, guid: 8961a31f82bdf14449ccfd601d20f020, type: 3}
   - {fileID: 8300000, guid: 76a21726a57e30f47882c126b0a47484, type: 3}
   - {fileID: 8300000, guid: 0efbb4d3714b42b42ac9072e193b9b1f, type: 3}
+  - {fileID: 8300000, guid: 696d2eb82b8e42e4092e9e442a71f9bc, type: 3}
+  - {fileID: 8300000, guid: fd66d9fd29b253940b0c65dd2af1ef95, type: 3}
+  - {fileID: 8300000, guid: 5066556fde71af846b7d71361355c2c5, type: 3}
+  - {fileID: 8300000, guid: cc25c371ee26cb745840d9f58324b327, type: 3}
+  - {fileID: 8300000, guid: 3e3decfc558754048b5b736e237bfa21, type: 3}
+  - {fileID: 8300000, guid: 3de8bf420490fe645ba3066405dc150d, type: 3}
+  - {fileID: 8300000, guid: 8961a31f82bdf14449ccfd601d20f020, type: 3}
+  - {fileID: 8300000, guid: 6f2dff2ef92cd4d4bbbe3c93ed850e93, type: 3}
 --- !u!82 &473031219
 AudioSource:
   m_ObjectHideFlags: 0
@@ -2399,7 +2405,7 @@ Camera:
   m_Enabled: 1
   serializedVersion: 2
   m_ClearFlags: 1
-  m_BackGroundColor: {r: 0.19215687, g: 0.3019608, b: 0.4745098, a: 0}
+  m_BackGroundColor: {r: 0.5882353, g: 0.6862745, b: 0.78431374, a: 0}
   m_projectionMatrixMode: 1
   m_GateFitMode: 2
   m_FOVAxisMode: 0
