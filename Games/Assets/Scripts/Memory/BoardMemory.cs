@@ -4,6 +4,7 @@ using UnityEngine;
 using System;
 using System.Linq;
 using Patterns;
+using UnityEngine.UI;
 
 namespace Memory
 {
@@ -61,6 +62,9 @@ namespace Memory
         public Transform mMasksParent;
         public Transform mCardsParent;
 
+        public Text mScoreText;
+        private int mScore = 0;
+
         private void Awake()
         {
             mCardLayout.Add(new Tuple<int, int>(2, 2));
@@ -71,6 +75,10 @@ namespace Memory
             mCardLayout.Add(new Tuple<int, int>(4, 5));
             mCardLayout.Add(new Tuple<int, int>(4, 6));
             mCardLayout.Add(new Tuple<int, int>(5, 6));
+            mCardLayout.Add(new Tuple<int, int>(6, 6));
+            mCardLayout.Add(new Tuple<int, int>(6, 7));
+            mCardLayout.Add(new Tuple<int, int>(7, 8));
+            mCardLayout.Add(new Tuple<int, int>(8, 8));
         }
 
         // Start is called before the first frame update
@@ -198,6 +206,9 @@ namespace Memory
         IEnumerator Coroutine_FirstCardSecondCardSame()
         {
             mFsm.SetCurrentState((int)GameState.StateID.NO_INPUT_MODE);
+            mScore += 20;
+            mScoreText.text = mScore.ToString();
+
             yield return new WaitForSeconds(0.1f);
             mFsm.SetCurrentState((int)GameState.StateID.WAITNG_FOR_FIRST_CARD);
         }
@@ -208,12 +219,20 @@ namespace Memory
             yield return new WaitForSeconds(0.5f);
             ShowMask(mFirstMaskIndex);
             ShowMask(mSecondMaskIndex);
+
+            mScore -= 5;
+            if (mScore < 0) mScore = 0;
+            mScoreText.text = mScore.ToString();
+
             mFsm.SetCurrentState((int)GameState.StateID.WAITNG_FOR_FIRST_CARD);
         }
 
         IEnumerator Coroutine_ChangeToWinState()
         {
             mFsm.SetCurrentState((int)GameState.StateID.NO_INPUT_MODE);
+
+            mScore += 10 * mLevel;
+            mScoreText.text = mScore.ToString();
             yield return new WaitForSeconds(1.0f);
             mFsm.SetCurrentState((int)GameState.StateID.WIN);
         }

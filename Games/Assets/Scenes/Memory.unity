@@ -139,7 +139,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &174500142
 Transform:
   m_ObjectHideFlags: 0
@@ -1120,6 +1120,7 @@ MonoBehaviour:
   mLevel: 1
   mMasksParent: {fileID: 1547887004}
   mCardsParent: {fileID: 1711563259}
+  mScoreText: {fileID: 993194657}
 --- !u!1 &2019691911
 GameObject:
   m_ObjectHideFlags: 0
