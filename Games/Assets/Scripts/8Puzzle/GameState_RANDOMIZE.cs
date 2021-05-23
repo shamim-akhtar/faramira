@@ -20,7 +20,7 @@ public class GameState_RANDOMIZE : GameState
         _puzzle.audioSource.PlayOneShot(_puzzle.audioRandomize);
         _puzzle.buttonRetry.gameObject.SetActive(false);
 
-        _puzzle.mBottomMenu.SetActive(false);
+        //_puzzle.mBottomMenu.SetActive(false);
     }
 
     public override void Exit()

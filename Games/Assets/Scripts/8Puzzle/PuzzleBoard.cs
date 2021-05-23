@@ -184,7 +184,7 @@ public class PuzzleBoard : MonoBehaviour
 
     private void OnDisable()
     {
-        mBottomMenu.btnNext.onClick.RemoveListener(LoadMenu);
+        mBottomMenu.btnPrev.onClick.RemoveListener(LoadMenu);
     }
 
 #if FARAMIRA_USE_ADS

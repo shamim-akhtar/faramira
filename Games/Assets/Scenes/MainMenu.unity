@@ -995,7 +995,7 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 927342968}
         m_TargetAssemblyTypeName: MainMenu, Assembly-CSharp
-        m_MethodName: OnClick_Play_Memory
+        m_MethodName: OnClick_Play_Tetris
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}

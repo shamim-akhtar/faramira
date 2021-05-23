@@ -44,13 +44,14 @@ namespace Tetris
             }
         }
 
-        IEnumerator Coroutine_RemoveLine(int id, float dt = 0.2f)
+        IEnumerator Coroutine_RemoveLine(int id, float dt = 0.1f)
         {
             for (float t = dt; t >= 0; t -= Time.deltaTime)
             {
                 // apply fade out
                 yield return null;
             }
+
             for (int i = 0; i < width; ++i)
             {
                 Transform t = mGrid[i, id];
@@ -58,6 +59,7 @@ namespace Tetris
                 Destroy(t.gameObject);
                 mGrid[i, id] = null;
             }
+
             // bring down all the above tiles.
             // how many blocks are there above this height.
             List<Block> blocks = new List<Block>();
@@ -82,8 +84,8 @@ namespace Tetris
                     if (!blocks[i].ValidMove())
                     {
                         blocks[i].transform.position -= new Vector3(0.0f, -1.0f, 0.0f);
-                        flag = false;
                         AddToGrid(blocks[i]);
+                        flag = false;
                     }
                 }
                 yield return null;

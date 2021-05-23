@@ -20,6 +20,7 @@ public class GameApp : Singleton<GameApp>
         sceneAudios.Add("8Puzzle", mAudioClips[2]);
         sceneAudios.Add("Maze", mAudioClips[3]);
         sceneAudios.Add("Memory", mAudioClips[4]);
+        sceneAudios.Add("Tetris", mAudioClips[5]);
     }
 
     void Update()
