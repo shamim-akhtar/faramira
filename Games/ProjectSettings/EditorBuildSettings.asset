@@ -26,4 +26,7 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/Memory.unity
     guid: 1d6833bac8a0e5b4ab5a5f26fd4893b5
+  - enabled: 1
+    path: Assets/Scenes/Tetris.unity
+    guid: e97e98ac97dc7d74fa258f53577796bd
   m_configObjects: {}

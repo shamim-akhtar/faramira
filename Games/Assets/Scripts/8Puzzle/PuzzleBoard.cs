@@ -210,7 +210,7 @@ public class PuzzleBoard : MonoBehaviour
         _puzzleLayout.SetSprites(_sprites);
         _puzzleLayout2.SetSprites(_sprites);
         //ID++;
-        ID = Random.Range(1, MaxImageCount);
+        ID = Random.Range(0, MaxImageCount);
 
         //mBottomMenu.SetActive(false);
     }

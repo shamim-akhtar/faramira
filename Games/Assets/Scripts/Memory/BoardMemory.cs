@@ -390,12 +390,12 @@ namespace Memory
                 }
             }
 
-            int maskRand = UnityEngine.Random.Range(0, SPRITE_MASK_NAMES.Length - 1);
+            int maskRand = UnityEngine.Random.Range(0, SPRITE_MASK_NAMES.Length);
             mCardMaskSprite = LoadSprite("Images/Memory/" + SPRITE_MASK_NAMES[maskRand]);
 
             for (int i = 0; i < mCards.Count; i += 2)
             {
-                int rand = UnityEngine.Random.Range(0, SPRITE_NAMES.Length - 1);
+                int rand = UnityEngine.Random.Range(0, SPRITE_NAMES.Length);
                 Sprite sp = LoadSprite("Images/Memory/" + SPRITE_NAMES[rand]);
                 mCardSprites.Add(sp);
                 mCardSprites.Add(sp);
@@ -497,7 +497,7 @@ namespace Memory
             //}
             //if (Input.GetKeyDown(KeyCode.LeftControl))
             //{
-            //    CreateLevel(UnityEngine.Random.Range(0, mCardLayout.Count - 1));
+            //    CreateLevel(UnityEngine.Random.Range(0, mCardLayout.Count));
             //}
         }
 

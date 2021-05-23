@@ -26,7 +26,7 @@ public class StatePlayAI : State
         Name = "StatePlayAI";
         mBoard = board;
 
-        //int index = Random.Range(0, GameApp.Instance.mAudioClips.Length - 1);
+        //int index = Random.Range(0, GameApp.Instance.mAudioClips.Length);
         //GameApp.Instance.mAmbientSound.Play(GameApp.Instance.mAudioClips[index], 0.8f);
     }
 
