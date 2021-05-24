@@ -380,14 +380,14 @@ namespace Tetris
             mLastLineRemovedTime = Time.time - mLastLineRemovedTime;
         }
 
-        void OnEnterClearLines()
+        IEnumerator Coroutine_RemoveLines()
         {
             int id = CheckIfNeedToClearLines();
-            //Debug.Log("OnEnterClearLines. ID: " + id);
             while (id != -1)
             {
                 RemoveLine(id);
                 id = CheckIfNeedToClearLines();
+                yield return new WaitForSeconds(1.0f);
             }
 
             if (mLinesRemoved >= 10)
@@ -398,6 +398,11 @@ namespace Tetris
             {
                 mFsm.SetCurrentState((int)GameState.StateID.PLAYING);
             }
+        }
+
+        void OnEnterClearLines()
+        {
+            StartCoroutine(Coroutine_RemoveLines());
         }
         void OnExitClearLines()
         {
