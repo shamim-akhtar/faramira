@@ -383,7 +383,7 @@ namespace Tetris
         void OnEnterClearLines()
         {
             int id = CheckIfNeedToClearLines();
-            Debug.Log("OnEnterClearLines. ID: " + id);
+            //Debug.Log("OnEnterClearLines. ID: " + id);
             while (id != -1)
             {
                 RemoveLine(id);
