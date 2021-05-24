@@ -314,7 +314,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!114 &510843946
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -865,6 +865,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7f734609993fb004ea12ffdd8180bb8c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  mFallTime: 1.2
+  mLevel: 1
   mSpawnPoint: {fileID: 1388427335}
   mBlockPrefabs:
   - {fileID: 4622991256148677644, guid: 2fd3ad86d6f226a4cbe24225b6069a4c, type: 3}
@@ -874,6 +876,8 @@ MonoBehaviour:
   - {fileID: 4622991256148677644, guid: 49474e965b6f32f40b2e7cc5618366eb, type: 3}
   - {fileID: 4622991256148677644, guid: 2c8baae7c98b08e45922e43ce579ebca, type: 3}
   - {fileID: 4622991256148677644, guid: 9378059f1dcf7d64da08fe47a1e27fc3, type: 3}
+  mLevelText: {fileID: 2039329094}
+  mScoreText: {fileID: 574257000}
 --- !u!1 &1965926269
 GameObject:
   m_ObjectHideFlags: 0

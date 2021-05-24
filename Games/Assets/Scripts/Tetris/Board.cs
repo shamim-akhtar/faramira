@@ -1,6 +1,8 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
+using Patterns;
 
 namespace Tetris
 { 
@@ -8,25 +10,52 @@ namespace Tetris
     {
         public static int width = 10;
         public static int height = 20;
+        public float mFallTime = 1.2f;
+        public int mLevel = 1;
         public Transform mSpawnPoint;
 
         public GameObject[] mBlockPrefabs;
+
+        private int mLinesRemoved = 0;
+        private float mLastLineRemovedTime = 0.0f;
         public Transform[, ] mGrid;
 
-        public void InstantiateRandomizeBlock()
+        public Text mLevelText;
+        public Text mScoreText;
+        private int mScore = 0;
+
+        FiniteStateMachine mFsm = new FiniteStateMachine();
+        Block mCurrentBlock = null;
+
+        public void InstantiateBlock(int id)
         {
-            int index = Random.Range(0, mBlockPrefabs.Length);
-            GameObject obj = Instantiate(mBlockPrefabs[index], mSpawnPoint.position, mSpawnPoint.rotation);
-            Block blk = obj.GetComponent<Block>();
-            if(blk != null)
+            GameObject obj = Instantiate(mBlockPrefabs[id], mSpawnPoint.position, mSpawnPoint.rotation);
+            mCurrentBlock = obj.GetComponent<Block>();
+            if (mCurrentBlock != null)
             {
-                blk.mBoard = this;
-                if(!blk.ValidMove())
+                mCurrentBlock.mBoard = this;
+                if (!mCurrentBlock.ValidMove())
                 {
                     Destroy(obj);
                     Lost();
                 }
             }
+            mCurrentBlock.mPrevTime = Time.time;
+        }
+
+        public void InstantiateRandomizeBlock()
+        {
+            int index = Random.Range(0, mBlockPrefabs.Length);
+            InstantiateBlock(index);
+        }
+
+        public void AddToGrid(Transform child)
+        {
+            child.SetParent(null, true);
+
+            int x = Mathf.RoundToInt(child.transform.position.x);
+            int y = Mathf.RoundToInt(child.transform.position.y);
+            mGrid[x, y] = child;
         }
 
         public void AddToGrid(Block blk)
@@ -36,7 +65,7 @@ namespace Tetris
             for (int i = blk.transform.childCount - 1; i >= 0; --i)
             {
                 Transform child = blk.transform.GetChild(i);
-                //child.SetParent(null, true);
+                child.SetParent(null, true);
 
                 int x = Mathf.RoundToInt(child.transform.position.x);
                 int y = Mathf.RoundToInt(child.transform.position.y);
@@ -44,61 +73,236 @@ namespace Tetris
             }
         }
 
-        IEnumerator Coroutine_RemoveLine(int id, float dt = 0.1f)
+        void UpdateScore()
         {
-            for (float t = dt; t >= 0; t -= Time.deltaTime)
+            mScore += 20;
+            if(mLastLineRemovedTime < 10)
             {
-                // apply fade out
-                yield return null;
+                mScore += 100;
             }
+            else if (mLastLineRemovedTime < 20)
+            {
+                mScore += 80;
+            }
+            else if (mLastLineRemovedTime < 40)
+            {
+                mScore += 40;
+            }
+            else if (mLastLineRemovedTime < 60)
+            {
+                mScore += 20;
+            }
+            else
+            {
+                mScore += 10;
+            }
+            mScoreText.text = mScore.ToString();
+        }
 
+        void Lost()
+        {
+            mFsm.SetCurrentState((int)GameState.StateID.LOST);
+        }
+
+        void LevelUp()
+        {
+            //Debug.Log("Completed Level: " + mLevel + ". Leveling up.");
+            mFallTime *= 0.75f;
+            mLevel += 1;
+            mLinesRemoved = 0;
+            mLastLineRemovedTime = 0.0f;
+            mLevelText.text = mLevel.ToString();
+        }
+
+        void Start()
+        {
+            mGrid = new Transform[width, height];
+            mLevelText.text = mLevel.ToString();
+
+
+            mFsm.Add(
+                new GameState(
+                    GameState.StateID.NEW_LEVEL,
+                    OnEnterNewLevel,
+                    OnExitNewLevel,
+                    OnUpdateNewLevel)
+                );
+            mFsm.Add(
+                new GameState(
+                    GameState.StateID.CLEAR_LINES,
+                    OnEnterClearLines,
+                    OnExitClearLines,
+                    OnUpdateClearLines)
+                );
+            mFsm.Add(
+                new GameState(
+                    GameState.StateID.PLAYING,
+                    OnEnterPlaying,
+                    OnExitPlaying,
+                    OnUpdatePlaying)
+                );
+            mFsm.Add(
+                new GameState(
+                    GameState.StateID.LOST,
+                    OnEnterLost,
+                    OnExitLost,
+                    OnUpdateLost)
+                );
+
+            mFsm.SetCurrentState((int)GameState.StateID.PLAYING);
+        }
+
+        void Update()
+        {
+            mFsm.Update();
+        }
+
+        void OnEnterLost()
+        {
+            Debug.Log("Game ended");
+        }
+
+        void OnExitLost()
+        {
+
+        }
+
+        void OnUpdateLost()
+        {
+
+        }
+
+        IEnumerator Coroutine_ClearBoard()
+        {
+            // clear board.
             for (int i = 0; i < width; ++i)
             {
-                Transform t = mGrid[i, id];
-                t.SetParent(null, true);
-                Destroy(t.gameObject);
-                mGrid[i, id] = null;
-            }
-
-            // bring down all the above tiles.
-            // how many blocks are there above this height.
-            List<Block> blocks = new List<Block>();
-            for (int j = id; j < height; ++j)
-            {
-                for (int i = 0; i < width; ++i)
+                for (int j = 0; j < height; ++j)
                 {
-                    if(mGrid[i, j] != null)
+                    if (mGrid[i, j] != null)
                     {
-                        blocks.Add(mGrid[i, j].parent.GetComponent<Block>());
-                        mGrid[i, j] = null;
+                        Destroy(mGrid[i, j].gameObject);
                     }
+                    mGrid[i, j] = null;
+                    yield return null;
                 }
             }
-
-            for(int i = 0; i < blocks.Count; ++i)
-            {
-                bool flag = true;
-                while (flag)
-                {
-                    blocks[i].transform.position += new Vector3(0.0f, -1.0f, 0.0f);
-                    if (!blocks[i].ValidMove())
-                    {
-                        blocks[i].transform.position -= new Vector3(0.0f, -1.0f, 0.0f);
-                        AddToGrid(blocks[i]);
-                        flag = false;
-                    }
-                }
-                yield return null;
-            }
-            CheckAndRemoveLine();
+            LevelUp();
+            mFsm.SetCurrentState((int)GameState.StateID.PLAYING);
         }
-
-        void RemoveLine(int id)
+        void OnEnterNewLevel()
         {
-            StartCoroutine(Coroutine_RemoveLine(id));
+            StartCoroutine(Coroutine_ClearBoard());
+        }
+        void OnExitNewLevel()
+        {
+
+        }
+        void OnUpdateNewLevel()
+        {
+
         }
 
-        public void CheckAndRemoveLine()
+        void OnEnterPlaying()
+        {
+            //Debug.Log("OnEnterPlaying");
+            InstantiateRandomizeBlock();
+        }
+        void OnExitPlaying()
+        {
+        }
+        void OnUpdatePlaying()
+        {
+#if TESTING
+            if (Input.GetKeyDown(KeyCode.Alpha0))
+            {
+                InstantiateBlock(0);
+            }
+            if (Input.GetKeyDown(KeyCode.Alpha1))
+            {
+                InstantiateBlock(1);
+            }
+            if (Input.GetKeyDown(KeyCode.Alpha2))
+            {
+                InstantiateBlock(2);
+            }
+            if (Input.GetKeyDown(KeyCode.Alpha3))
+            {
+                InstantiateBlock(3);
+            }
+            if (Input.GetKeyDown(KeyCode.Alpha4))
+            {
+                InstantiateBlock(4);
+            }
+            if (Input.GetKeyDown(KeyCode.Alpha5))
+            {
+                InstantiateBlock(5);
+            }
+            if (Input.GetKeyDown(KeyCode.Alpha6))
+            {
+                InstantiateBlock(6);
+            }
+#endif
+            if (mCurrentBlock == null)
+            {
+                return;
+            }
+            if (Input.GetKeyDown(KeyCode.LeftArrow))
+            {
+                mCurrentBlock.transform.position += new Vector3(-1.0f, 0.0f, 0.0f);
+                if (!mCurrentBlock.ValidMove())
+                {
+                    mCurrentBlock.transform.position -= new Vector3(-1.0f, 0.0f, 0.0f);
+                }
+            }
+            if (Input.GetKeyDown(KeyCode.RightArrow))
+            {
+                mCurrentBlock.transform.position += new Vector3(1.0f, 0.0f, 0.0f);
+                if (!mCurrentBlock.ValidMove())
+                {
+                    mCurrentBlock.transform.position -= new Vector3(1.0f, 0.0f, 0.0f);
+                }
+            }
+
+            if (Input.GetKeyDown(KeyCode.UpArrow))
+            {
+                mCurrentBlock.transform.RotateAround(
+                    mCurrentBlock.transform.TransformPoint(mCurrentBlock.mRotationPoint), 
+                    new Vector3(0.0f, 0.0f, 1.0f), 
+                    90.0f
+                );
+
+                if (!mCurrentBlock.ValidMove())
+                {
+                    mCurrentBlock.transform.RotateAround(
+                        mCurrentBlock.transform.TransformPoint(mCurrentBlock.mRotationPoint), 
+                        new Vector3(0.0f, 0.0f, 1.0f), 
+                        -90.0f
+                    );
+                }
+            }
+
+            float fallTime = mFallTime;
+            if (Input.GetKey(KeyCode.DownArrow))
+            {
+                fallTime /= 10.0f;
+            }
+
+            if (Time.time - mCurrentBlock.mPrevTime > fallTime)
+            {
+                mCurrentBlock.transform.position += new Vector3(0.0f, -1.0f, 0.0f);
+                if (!mCurrentBlock.ValidMove())
+                {
+                    mCurrentBlock.transform.position -= new Vector3(0.0f, -1.0f, 0.0f);
+                    mCurrentBlock.enabled = false;
+                    AddToGrid(mCurrentBlock);
+                    mFsm.SetCurrentState((int)GameState.StateID.CLEAR_LINES);
+                }
+                mCurrentBlock.mPrevTime = Time.time;
+            }
+        }
+
+        public int CheckIfNeedToClearLines()
         {
             for (int j = 0; j < height; ++j)
             {
@@ -107,29 +311,99 @@ namespace Tetris
                 {
                     removeLine = removeLine && mGrid[i, j] != null;
                 }
-                if(removeLine)
+                if (removeLine)
                 {
-                    RemoveLine(j);
-                    break;
+                    return j;
                 }
             }
+            return -1;
         }
 
-        void Lost()
+        public bool ValidMove(Transform child)
         {
-            Debug.Log("Game ended");
+            int x = Mathf.RoundToInt(child.transform.position.x);
+            int y = Mathf.RoundToInt(child.transform.position.y);
+
+            if (x < 0 || x >= Board.width || y < 0 || y >= Board.height)
+            {
+                return false;
+            }
+
+            if (mGrid[x, y] != null)
+            {
+                return false;
+            }
+            return true;
         }
 
-        void Start()
+        void RemoveLine(int id)
         {
-            mGrid = new Transform[width, height];
-            InstantiateRandomizeBlock();
+            for (int i = 0; i < width; ++i)
+            {
+                Transform t = mGrid[i, id];
+                Destroy(t.gameObject);
+                mGrid[i, id] = null;
+            }
+
+            // bring down all the above tiles.
+            // how many blocks are there above this height.
+            List<Transform> blocks = new List<Transform>();
+            for (int j = id; j < height; ++j)
+            {
+                for (int i = 0; i < width; ++i)
+                {
+                    if (mGrid[i, j] != null)
+                    {
+                        blocks.Add(mGrid[i, j]);
+                        mGrid[i, j] = null;
+                    }
+                }
+            }
+
+            for (int i = 0; i < blocks.Count; ++i)
+            {
+                bool flag = true;
+                while (flag)
+                {
+                    blocks[i].transform.position += new Vector3(0.0f, -1.0f, 0.0f);
+                    if (!ValidMove(blocks[i]))
+                    {
+                        blocks[i].transform.position -= new Vector3(0.0f, -1.0f, 0.0f);
+                        AddToGrid(blocks[i]);
+                        flag = false;
+                    }
+                }
+            }
+            mLinesRemoved += 1;
+            Debug.Log("mLinesRemoved: " + mLinesRemoved);
+            UpdateScore();
+            mLastLineRemovedTime = Time.time - mLastLineRemovedTime;
         }
 
-        void Update()
+        void OnEnterClearLines()
         {
-            // check for tiles removal.
+            int id = CheckIfNeedToClearLines();
+            Debug.Log("OnEnterClearLines. ID: " + id);
+            while (id != -1)
+            {
+                RemoveLine(id);
+                id = CheckIfNeedToClearLines();
+            }
 
+            if (mLinesRemoved >= 10)
+            {
+                mFsm.SetCurrentState((int)GameState.StateID.NEW_LEVEL);
+            }
+            else
+            {
+                mFsm.SetCurrentState((int)GameState.StateID.PLAYING);
+            }
+        }
+        void OnExitClearLines()
+        {
+        }
+        void OnUpdateClearLines()
+        {
         }
     }
 }

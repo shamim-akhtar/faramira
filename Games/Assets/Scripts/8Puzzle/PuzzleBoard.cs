@@ -142,6 +142,7 @@ public class PuzzleBoard : MonoBehaviour
         _puzzleSet2.transform.position = new Vector3(0.0f, -600.0f, 0.0f);
         _puzzleSet2.SetActive(false);
 
+        ID = Random.Range(0, MaxImageCount);
         LoadPuzzleImage();
 
         Neighbours.Instance.CreateGraphForNPuzzle(PuzzleRowsOrCols);
