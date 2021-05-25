@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using Patterns;
+using UnityEngine.SceneManagement;
 
 namespace Tetris
 { 
@@ -482,6 +483,11 @@ namespace Tetris
         void OnEnterClearLines()
         {
             StartCoroutine(Coroutine_RemoveLines());
+        }
+
+        public void MainMenu()
+        {
+            SceneManager.LoadScene("MainMenu");
         }
     }
 }
