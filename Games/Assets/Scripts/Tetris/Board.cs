@@ -22,19 +22,41 @@ namespace Tetris
 
         public Text mLevelText;
         public Text mScoreText;
+        public Text mLinesText;
         private int mScore = 0;
+
+        public AudioSource mAudioSource;
+        public AudioClip mClearLineAudioClip;
+        public AudioClip mLevelUpAudioClip;
+        public AudioClip mLostAudioClip;
+        public AudioClip mAddToGridAudioClip;
+
+        public GameObject mNextBlock;
+        private GameObject mNextBlockInstantiated = null;
 
         FiniteStateMachine mFsm = new FiniteStateMachine();
         Block mCurrentBlock = null;
 
         public void InstantiateBlock(int id)
         {
-            GameObject obj = Instantiate(mBlockPrefabs[id], mSpawnPoint.position, mSpawnPoint.rotation);
+            GameObject obj = null;
+            if(mNextBlockInstantiated != null)
+            {
+                obj = mNextBlockInstantiated;// Instantiate(mNextBlockInstantiated, mSpawnPoint.position, mSpawnPoint.rotation); ;
+                obj.transform.position = mSpawnPoint.position;
+                mNextBlockInstantiated = Instantiate(mBlockPrefabs[id], mNextBlock.transform.position, mNextBlock.transform.rotation);
+            }
+            else
+            {
+                obj = Instantiate(mBlockPrefabs[id], mSpawnPoint.position, mSpawnPoint.rotation);
+                int index = Random.Range(0, mBlockPrefabs.Length);
+                mNextBlockInstantiated = Instantiate(mBlockPrefabs[index], mNextBlock.transform.position, mNextBlock.transform.rotation);
+            }
+            //GameObject obj = Instantiate(mBlockPrefabs[id], mSpawnPoint.position, mSpawnPoint.rotation);
             mCurrentBlock = obj.GetComponent<Block>();
             if (mCurrentBlock != null)
             {
-                mCurrentBlock.mBoard = this;
-                if (!mCurrentBlock.ValidMove())
+                if (!ValidMove(mCurrentBlock))
                 {
                     Destroy(obj);
                     Lost();
@@ -60,6 +82,8 @@ namespace Tetris
 
         public void AddToGrid(Block blk)
         {
+            StartCoroutine(AmbientSound.Coroutine_PlayShot(mAudioSource, mAddToGridAudioClip));
+
             // Manual reverse iteration is possible using the GetChild() and childCount variables
             // Using normal forward traversal we cannot remove the parent.
             for (int i = blk.transform.childCount - 1; i >= 0; --i)
@@ -114,39 +138,46 @@ namespace Tetris
             mLevelText.text = mLevel.ToString();
         }
 
+        public GameObject mBoardSquare;
+        void CreateBoardSquares()
+        {
+            for(int i = 0; i < width; ++i)
+            {
+                for(int j = 0; j < height; ++j)
+                {
+                    Instantiate(mBoardSquare, new Vector3(i, j, 0.0f), Quaternion.identity);
+                }
+            }
+        }
+
         void Start()
         {
             mGrid = new Transform[width, height];
             mLevelText.text = mLevel.ToString();
 
+            CreateBoardSquares();
 
             mFsm.Add(
                 new GameState(
                     GameState.StateID.NEW_LEVEL,
-                    OnEnterNewLevel,
-                    OnExitNewLevel,
-                    OnUpdateNewLevel)
+                    OnEnterNewLevel)
                 );
             mFsm.Add(
                 new GameState(
                     GameState.StateID.CLEAR_LINES,
-                    OnEnterClearLines,
-                    OnExitClearLines,
-                    OnUpdateClearLines)
+                    OnEnterClearLines)
                 );
             mFsm.Add(
                 new GameState(
                     GameState.StateID.PLAYING,
                     OnEnterPlaying,
-                    OnExitPlaying,
+                    null,
                     OnUpdatePlaying)
                 );
             mFsm.Add(
                 new GameState(
                     GameState.StateID.LOST,
-                    OnEnterLost,
-                    OnExitLost,
-                    OnUpdateLost)
+                    OnEnterLost)
                 );
 
             mFsm.SetCurrentState((int)GameState.StateID.PLAYING);
@@ -157,19 +188,18 @@ namespace Tetris
             mFsm.Update();
         }
 
+        IEnumerator Coroutine_OnLost()
+        {
+            yield return StartCoroutine(Coroutine_ClearBoard());
+            mLevel = 1;
+            mFsm.SetCurrentState((int)GameState.StateID.PLAYING);
+        }
+
         void OnEnterLost()
         {
+            StartCoroutine(AmbientSound.Coroutine_PlayShot(mAudioSource, mLostAudioClip));
+            StartCoroutine(Coroutine_OnLost());
             Debug.Log("Game ended");
-        }
-
-        void OnExitLost()
-        {
-
-        }
-
-        void OnUpdateLost()
-        {
-
         }
 
         IEnumerator Coroutine_ClearBoard()
@@ -187,20 +217,18 @@ namespace Tetris
                     yield return null;
                 }
             }
+        }
+
+        IEnumerator Coroutine_LevelUp()
+        {
+            yield return StartCoroutine(Coroutine_ClearBoard());
             LevelUp();
             mFsm.SetCurrentState((int)GameState.StateID.PLAYING);
         }
         void OnEnterNewLevel()
         {
-            StartCoroutine(Coroutine_ClearBoard());
-        }
-        void OnExitNewLevel()
-        {
-
-        }
-        void OnUpdateNewLevel()
-        {
-
+            StartCoroutine(AmbientSound.Coroutine_PlayShot(mAudioSource, mLevelUpAudioClip));
+            StartCoroutine(Coroutine_LevelUp());
         }
 
         void OnEnterPlaying()
@@ -208,9 +236,48 @@ namespace Tetris
             //Debug.Log("OnEnterPlaying");
             InstantiateRandomizeBlock();
         }
-        void OnExitPlaying()
+
+        public void BlockRotate()
         {
+            mCurrentBlock.transform.RotateAround(
+                mCurrentBlock.transform.TransformPoint(mCurrentBlock.mRotationPoint),
+                new Vector3(0.0f, 0.0f, 1.0f),
+                90.0f
+            );
+
+            if (!ValidMove(mCurrentBlock))
+            {
+                mCurrentBlock.transform.RotateAround(
+                    mCurrentBlock.transform.TransformPoint(mCurrentBlock.mRotationPoint),
+                    new Vector3(0.0f, 0.0f, 1.0f),
+                    -90.0f
+                );
+            }
         }
+
+        public void BlockLeft()
+        {
+            mCurrentBlock.transform.position += new Vector3(-1.0f, 0.0f, 0.0f);
+            if (!ValidMove(mCurrentBlock))
+            {
+                mCurrentBlock.transform.position -= new Vector3(-1.0f, 0.0f, 0.0f);
+            }
+        }
+        public void BlockRight()
+        {
+            mCurrentBlock.transform.position += new Vector3(1.0f, 0.0f, 0.0f);
+            if (!ValidMove(mCurrentBlock))
+            {
+                mCurrentBlock.transform.position -= new Vector3(1.0f, 0.0f, 0.0f);
+            }
+        }
+
+        private bool mDownKeyPressed =false;
+        public void BlockDownKeyPresses()
+        {
+            mDownKeyPressed = true;
+        }
+
         void OnUpdatePlaying()
         {
 #if TESTING
@@ -249,49 +316,33 @@ namespace Tetris
             }
             if (Input.GetKeyDown(KeyCode.LeftArrow))
             {
-                mCurrentBlock.transform.position += new Vector3(-1.0f, 0.0f, 0.0f);
-                if (!mCurrentBlock.ValidMove())
-                {
-                    mCurrentBlock.transform.position -= new Vector3(-1.0f, 0.0f, 0.0f);
-                }
+                BlockLeft();
             }
             if (Input.GetKeyDown(KeyCode.RightArrow))
             {
-                mCurrentBlock.transform.position += new Vector3(1.0f, 0.0f, 0.0f);
-                if (!mCurrentBlock.ValidMove())
-                {
-                    mCurrentBlock.transform.position -= new Vector3(1.0f, 0.0f, 0.0f);
-                }
+                BlockRight();
             }
 
             if (Input.GetKeyDown(KeyCode.UpArrow))
             {
-                mCurrentBlock.transform.RotateAround(
-                    mCurrentBlock.transform.TransformPoint(mCurrentBlock.mRotationPoint), 
-                    new Vector3(0.0f, 0.0f, 1.0f), 
-                    90.0f
-                );
-
-                if (!mCurrentBlock.ValidMove())
-                {
-                    mCurrentBlock.transform.RotateAround(
-                        mCurrentBlock.transform.TransformPoint(mCurrentBlock.mRotationPoint), 
-                        new Vector3(0.0f, 0.0f, 1.0f), 
-                        -90.0f
-                    );
-                }
+                BlockRotate();
             }
 
             float fallTime = mFallTime;
             if (Input.GetKey(KeyCode.DownArrow))
             {
+                mDownKeyPressed = true;
+            }
+            if(mDownKeyPressed)
+            {
                 fallTime /= 10.0f;
+                mDownKeyPressed = false;
             }
 
             if (Time.time - mCurrentBlock.mPrevTime > fallTime)
             {
                 mCurrentBlock.transform.position += new Vector3(0.0f, -1.0f, 0.0f);
-                if (!mCurrentBlock.ValidMove())
+                if (!ValidMove(mCurrentBlock))
                 {
                     mCurrentBlock.transform.position -= new Vector3(0.0f, -1.0f, 0.0f);
                     mCurrentBlock.enabled = false;
@@ -336,6 +387,27 @@ namespace Tetris
             return true;
         }
 
+        public bool ValidMove(Block blk)
+        {
+            foreach (Transform child in blk.transform)
+            {
+                int x = Mathf.RoundToInt(child.transform.position.x);
+                int y = Mathf.RoundToInt(child.transform.position.y);
+
+                if (x < 0 || x >= Board.width || y < 0 || y >= Board.height)
+                {
+                    return false;
+                }
+
+                if (mGrid[x, y] != null)
+                {
+                    return false;
+                }
+            }
+            return true;
+        }
+
+
         void RemoveLine(int id)
         {
             for (int i = 0; i < width; ++i)
@@ -375,9 +447,15 @@ namespace Tetris
                 }
             }
             mLinesRemoved += 1;
+            mLinesText.text = (GetLinesToClearLevel(mLevel) - mLinesRemoved).ToString();
             Debug.Log("mLinesRemoved: " + mLinesRemoved);
             UpdateScore();
             mLastLineRemovedTime = Time.time - mLastLineRemovedTime;
+        }
+
+        public int GetLinesToClearLevel(int level)
+        {
+            return 10;
         }
 
         IEnumerator Coroutine_RemoveLines()
@@ -387,10 +465,11 @@ namespace Tetris
             {
                 RemoveLine(id);
                 id = CheckIfNeedToClearLines();
-                yield return new WaitForSeconds(1.0f);
+                //yield return new WaitForSeconds(1.0f);
+                yield return StartCoroutine(AmbientSound.Coroutine_PlayShot(mAudioSource, mClearLineAudioClip));
             }
 
-            if (mLinesRemoved >= 10)
+            if (mLinesRemoved >= GetLinesToClearLevel(mLevel))
             {
                 mFsm.SetCurrentState((int)GameState.StateID.NEW_LEVEL);
             }
@@ -403,12 +482,6 @@ namespace Tetris
         void OnEnterClearLines()
         {
             StartCoroutine(Coroutine_RemoveLines());
-        }
-        void OnExitClearLines()
-        {
-        }
-        void OnUpdateClearLines()
-        {
         }
     }
 }

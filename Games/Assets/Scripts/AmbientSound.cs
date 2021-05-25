@@ -9,6 +9,15 @@ public class AmbientSound : MonoBehaviour
 
     private bool active1 = true;
 
+    public static IEnumerator Coroutine_PlayShot(AudioSource source, AudioClip clip)
+    {
+        float length = clip.length;
+        source.volume = AudioListener.volume;
+        source.loop = false;
+        source.PlayOneShot(clip);
+        yield return new WaitForSeconds(length);
+    }
+
     public void Play(AudioClip clip, float volume = 1.0f, float pitch=1.0f)
     {
         volume *= AudioListener.volume;
