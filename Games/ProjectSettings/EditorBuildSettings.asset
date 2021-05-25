@@ -29,4 +29,7 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/Tetris.unity
     guid: e97e98ac97dc7d74fa258f53577796bd
+  - enabled: 1
+    path: Assets/Scenes/Quiz.unity
+    guid: 14e8be171771f5941949799a73de2789
   m_configObjects: {}

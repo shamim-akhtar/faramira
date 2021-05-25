@@ -61,6 +61,12 @@ public class MainMenu : MonoBehaviour
         GameApp.Instance.mBottomMenu.btnNext.gameObject.SetActive(true);
     }
 
+    public void OnClick_Play_Quiz()
+    {
+        GameToLoad = "Quiz";
+        GameApp.Instance.mBottomMenu.btnNext.gameObject.SetActive(true);
+    }
+
     public void OnClick_Next()
     {
         if(GameToLoad != null)

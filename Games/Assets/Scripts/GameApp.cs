@@ -21,6 +21,7 @@ public class GameApp : Singleton<GameApp>
         sceneAudios.Add("Maze", mAudioClips[3]);
         sceneAudios.Add("Memory", mAudioClips[4]);
         sceneAudios.Add("Tetris", mAudioClips[5]);
+        sceneAudios.Add("Quiz", mAudioClips[6]);
     }
 
     void Update()
