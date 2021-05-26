@@ -6,18 +6,12 @@ using UnityEngine.SceneManagement;
 public class Maze_Level : MonoBehaviour
 {
     public BottomMenu mBottomMenu;
-    // Start is called before the first frame update
+    public CanvasConfirmA mConfirmExit;
+
     void Start()
     {
-        //mBottomMenu = GameApp.Instance.mBottomMenu;
-        mBottomMenu.SetActive(true);
-        mBottomMenu.btnNext.gameObject.SetActive(false);
-        mBottomMenu.btnPrev.onClick.AddListener(LoadMenu);
-    }
-
-    private void OnDisable()
-    {
-        mBottomMenu.btnPrev.onClick.RemoveListener(LoadMenu);
+        mConfirmExit.onClickYes = LoadMenu;
+        mConfirmExit.onClickNo = DisableExitMenu;
     }
 
     // Update is called once per frame
@@ -29,5 +23,31 @@ public class Maze_Level : MonoBehaviour
     void LoadMenu()
     {
         SceneManager.LoadScene("MainMenu");
+    }
+
+    public void OnClickNextGame()
+    {
+    }
+
+    public void OnClickExitGame()
+    {
+        mConfirmExit.gameObject.SetActive(true);
+        PauseGame();
+    }
+
+    public void DisableExitMenu()
+    {
+        mConfirmExit.gameObject.SetActive(false);
+        ResumeGame();
+    }
+
+    void PauseGame()
+    {
+        //Time.timeScale = 0;
+    }
+
+    void ResumeGame()
+    {
+        //Time.timeScale = 1;
     }
 }

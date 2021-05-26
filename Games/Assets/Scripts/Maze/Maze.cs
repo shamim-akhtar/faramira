@@ -35,8 +35,6 @@ public class Maze
             flag[(int)dir] = f;
             OnSetDirFlag?.Invoke(x, y, dir, f);
         }
-
-
     }
 
     private int _rows;
