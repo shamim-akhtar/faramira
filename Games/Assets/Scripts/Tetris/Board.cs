@@ -38,6 +38,18 @@ namespace Tetris
         FiniteStateMachine mFsm = new FiniteStateMachine();
         Block mCurrentBlock = null;
 
+        public CanvasConfirmA mCanvasConfirm;
+
+        private bool mPausing = false;
+
+        public Button mBtnPause;
+        public Button mBtnPlay;
+
+        private bool mDownKeyPressed = false;
+        private bool mLeftKeyPressed = false;
+        private bool mRightKeyPressed = false;
+        public FixedButton mBtnDown;
+
         public void InstantiateBlock(int id)
         {
             GameObject obj = null;
@@ -181,6 +193,8 @@ namespace Tetris
                     OnEnterLost)
                 );
 
+            mCanvasConfirm.onClickNo = OnCancelExitGame;
+            mCanvasConfirm.onClickYes = LoadMainMenu;
             mFsm.SetCurrentState((int)GameState.StateID.PLAYING);
         }
 
@@ -240,6 +254,7 @@ namespace Tetris
 
         public void BlockRotate()
         {
+            if (mPausing) return;
             mCurrentBlock.transform.RotateAround(
                 mCurrentBlock.transform.TransformPoint(mCurrentBlock.mRotationPoint),
                 new Vector3(0.0f, 0.0f, 1.0f),
@@ -258,6 +273,7 @@ namespace Tetris
 
         public void BlockLeft()
         {
+            if (mPausing) return;
             mCurrentBlock.transform.position += new Vector3(-1.0f, 0.0f, 0.0f);
             if (!ValidMove(mCurrentBlock))
             {
@@ -266,6 +282,7 @@ namespace Tetris
         }
         public void BlockRight()
         {
+            if (mPausing) return;
             mCurrentBlock.transform.position += new Vector3(1.0f, 0.0f, 0.0f);
             if (!ValidMove(mCurrentBlock))
             {
@@ -273,7 +290,6 @@ namespace Tetris
             }
         }
 
-        private bool mDownKeyPressed =false;
         public void BlockDownKeyPresses()
         {
             mDownKeyPressed = true;
@@ -281,6 +297,7 @@ namespace Tetris
 
         void OnUpdatePlaying()
         {
+            if (mPausing) return;
 #if TESTING
             if (Input.GetKeyDown(KeyCode.Alpha0))
             {
@@ -331,6 +348,10 @@ namespace Tetris
 
             float fallTime = mFallTime;
             if (Input.GetKey(KeyCode.DownArrow))
+            {
+                mDownKeyPressed = true;
+            }
+            if(mBtnDown.Pressed)
             {
                 mDownKeyPressed = true;
             }
@@ -485,9 +506,39 @@ namespace Tetris
             StartCoroutine(Coroutine_RemoveLines());
         }
 
-        public void MainMenu()
+        public void OnClickExitGame()
+        {
+            mCanvasConfirm.gameObject.SetActive(true);
+            mPausing = true;
+            mBtnPause.gameObject.SetActive(false);
+            mBtnPlay.gameObject.SetActive(true);
+        }
+
+        public void OnCancelExitGame()
+        {
+            mCanvasConfirm.gameObject.SetActive(false);
+            mPausing = false;
+            mBtnPause.gameObject.SetActive(true);
+            mBtnPlay.gameObject.SetActive(false);
+        }
+
+        public void LoadMainMenu()
         {
             SceneManager.LoadScene("MainMenu");
+        }
+
+        public void OnClickPause()
+        {
+            mPausing = true;
+            mBtnPause.gameObject.SetActive(false);
+            mBtnPlay.gameObject.SetActive(true);
+        }
+
+        public void OnClickPlay()
+        {
+            mPausing = false;
+            mBtnPause.gameObject.SetActive(true);
+            mBtnPlay.gameObject.SetActive(false);
         }
     }
 }
