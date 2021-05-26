@@ -7,7 +7,7 @@ public class AmbientSound : MonoBehaviour
     public AudioSource mAudioSource1;
     public AudioSource mAudioSource2;
 
-    private bool active1 = true;
+    protected bool active1 = true;
 
     public static IEnumerator Coroutine_PlayShot(AudioSource source, AudioClip clip)
     {
@@ -42,12 +42,12 @@ public class AmbientSound : MonoBehaviour
         audioSource.volume = 0.0f;
         audioSource.loop = true;
         audioSource.Play();
-        StartCoroutine(StartFade(audioSource, 2.0f, volume));
+        StartCoroutine(StartFade(audioSource, 1.0f, volume));
     }
 
     private void Stop(AudioSource audioSource)
     {
-        StartCoroutine(StartFade(audioSource, 2.0f, 0.0f));
+        StartCoroutine(StartFade(audioSource, 1.0f, 0.0f));
     }
 
     public IEnumerator StartFade(AudioSource audioSource, float duration, float targetVolume)

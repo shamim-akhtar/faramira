@@ -96,7 +96,9 @@ public class GameState_WAIT : GameState
 
     public override void Update()
     {
-        if(_puzzle.buttonStart.Pressed)
+        // if we are showing the game exit menu then do nothing.
+        if (_puzzle.mGameMenuHandler.mShowingExitPopup) return;
+        if (_puzzle.buttonStart.Pressed)
         {
             m_fsm.SetCurrentState((int)StateID.RANDOMIZE);
             _puzzle.audioSource.PlayOneShot(_puzzle.audioClickTile);
@@ -139,11 +141,6 @@ public class GameState_WIN : GameState
         }
         _puzzle.totalScore.text = _puzzle.yourTotalScore.ToString();
 
-        // change the menu.
-        _puzzle.mBottomMenu.SetActive(true);
-        //_puzzle.mBottomMenu.btnPrev.gameObject.SetActive(true);
-        _puzzle.mBottomMenu.btnNext.gameObject.SetActive(false);
-
         Debug.Log("GameState_WIN");
     }
 
@@ -160,13 +157,16 @@ public class GameState_WIN : GameState
 
     public override void Update()
     {
+        // if we are showing the game exit menu then do nothing.
+        if (_puzzle.mGameMenuHandler.mShowingExitPopup) return;
         if (_puzzle.buttonCompare.Pressed)
         {
             if (_puzzle.m_astarSolved)
             {
                 _puzzle.buttonCompare.Pressed = false;
                 m_fsm.SetCurrentState((int)StateID.COMPARE);
-                _puzzle.mBottomMenu.SetActive(false);
+                //_puzzle.mBottomMenu.SetActive(false);
+                _puzzle.mGameMenuHandler.mBottomMenu.SetActive(false);
             }
         }
         if (_puzzle.buttonRetry.Pressed)
@@ -299,6 +299,8 @@ public class GameState_SHOW_HINT : GameState
 
     public override void Update()
     {
+        // if we are showing the game exit menu then do nothing.
+        if (_puzzle.mGameMenuHandler.mShowingExitPopup) return;
         if (_puzzle.buttonHint.Pressed)
         {
         }
@@ -332,6 +334,8 @@ public class GameState_CANCEL : GameState
 
     public override void Update()
     {
+        // if we are showing the game exit menu then do nothing.
+        if (_puzzle.mGameMenuHandler.mShowingExitPopup) return;
         m_fsm.SetCurrentState((int)StateID.SHOW_REWARD_AD);
     }
 }
@@ -425,6 +429,8 @@ public class GameState_ASTAR_SOLUTION : GameState
 
     public override void Update()
     {
+        // if we are showing the game exit menu then do nothing.
+        if (_puzzle.mGameMenuHandler.mShowingExitPopup) return;
         if (_puzzle.buttonBack.Pressed)
         {
             _puzzle.buttonBack.Pressed = false;

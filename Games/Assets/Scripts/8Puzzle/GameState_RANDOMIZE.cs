@@ -39,6 +39,8 @@ public class GameState_RANDOMIZE : GameState
 
     public override void Update()
     {
+        // if we are showing the game exit menu then do nothing.
+        if (_puzzle.mGameMenuHandler.mShowingExitPopup) return;
         if (_index < _depth)
         {
             int zero = _puzzle._state.FindEmptyTileIndex();

@@ -51,6 +51,9 @@ public class GameState_COMPARE : GameState
 
     public override void Update()
     {
+        // if we are showing the game exit menu then do nothing.
+        if (_puzzle.mGameMenuHandler.mShowingExitPopup) return;
+
         if (_puzzle.buttonNextSol.Pressed)
         {
             _puzzle.buttonNextSol.Pressed = false;

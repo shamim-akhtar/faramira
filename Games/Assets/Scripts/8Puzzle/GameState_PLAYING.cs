@@ -31,6 +31,8 @@ public class GameState_PLAYING : GameState
 
     public void HandleTileClick()
     {
+        // if we are showing the game exit menu then do nothing.
+        if (_puzzle.mGameMenuHandler.mShowingExitPopup) return;
         if (Input.GetMouseButtonDown(0))
         {
             GameObject selected = Puzzle.Utils.Pick2D();
@@ -66,6 +68,9 @@ public class GameState_PLAYING : GameState
 
     public override void Update()
     {
+        // if we are showing the game exit menu then do nothing.
+        if (_puzzle.mGameMenuHandler.mShowingExitPopup) return;
+
         HandleTileClick();
 
         bool solved = Puzzle.State.Equals(_puzzle._state, _puzzle._goal);

@@ -97,7 +97,7 @@ public class PuzzleBoard : MonoBehaviour
     public Text textMessage;
 
 #if FARAMIRA_USE_ADS
-#region Unity Ads
+    #region Unity Ads
     public readonly string GameID_Android = "3605936";
     public readonly string GameID_iOS = "3605937";
     public readonly string placementId = "ingame_banner";
@@ -115,10 +115,12 @@ public class PuzzleBoard : MonoBehaviour
     }
     [HideInInspector]
     public AdRunningState adState = AdRunningState.NO_AD_STARTED;
-#endregion
+    #endregion
 #endif
 
-    public BottomMenu mBottomMenu;
+    //public BottomMenu mBottomMenu;
+    public GameMenuHandler mGameMenuHandler;
+    public SceneAmbientSound mAmbientSound;
 
     // Start is called before the first frame update
     void Awake()
@@ -165,9 +167,10 @@ public class PuzzleBoard : MonoBehaviour
         audioSource.Play();
 
         //mBottomMenu = GameApp.Instance.mBottomMenu;
-        mBottomMenu.SetActive(true);
-        mBottomMenu.btnNext.gameObject.SetActive(false);
-        mBottomMenu.btnPrev.onClick.AddListener(LoadMenu);
+        //mBottomMenu.SetActive(true);
+        //mBottomMenu.btnNext.gameObject.SetActive(false);
+        //mBottomMenu.btnPrev.onClick.AddListener(LoadMenu);
+        mGameMenuHandler.SetActiveBtnHome(true);
 
 #if FARAMIRA_USE_ADS
         // initialize ADs
@@ -181,11 +184,6 @@ public class PuzzleBoard : MonoBehaviour
         Advertisement.Initialize(GameID_Android, testMode);
 #endif
 #endif
-    }
-
-    private void OnDisable()
-    {
-        mBottomMenu.btnPrev.onClick.RemoveListener(LoadMenu);
     }
 
 #if FARAMIRA_USE_ADS
@@ -214,6 +212,7 @@ public class PuzzleBoard : MonoBehaviour
         ID = Random.Range(0, MaxImageCount);
 
         //mBottomMenu.SetActive(false);
+        mAmbientSound.ChangeAudio();
     }
 
     // Update is called once per frame
@@ -268,12 +267,12 @@ public class PuzzleBoard : MonoBehaviour
         puzzle.SwapWithEmpty(first);
     }
 
-    public void LoadMenu()
-    {
-        audioSource.Stop();
-        // show popup.
-        SceneManager.LoadScene("MainMenu");
-    }
+    //public void LoadMenu()
+    //{
+    //    audioSource.Stop();
+    //    // show popup.
+    //    SceneManager.LoadScene("MainMenu");
+    //}
 
     private static bool IsStateInList(State state, List<Node> li)
     {

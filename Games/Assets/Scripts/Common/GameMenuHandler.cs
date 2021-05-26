@@ -11,6 +11,8 @@ public class GameMenuHandler : MonoBehaviour
     public delegate void DelegateOnClickNextGame();
     public DelegateOnClickNextGame onClickNextGame;
 
+    public bool mShowingExitPopup = false;
+
     void Start()
     {
         mConfirmExit.onClickYes = LoadMenu;
@@ -39,11 +41,13 @@ public class GameMenuHandler : MonoBehaviour
     public void OnClickExitGame()
     {
         mConfirmExit.gameObject.SetActive(true);
+        mShowingExitPopup = true;
     }
 
     public void DisableExitMenu()
     {
         mConfirmExit.gameObject.SetActive(false);
+        mShowingExitPopup = false;
     }
 
     public void SetActiveBtnNext(bool flag)
