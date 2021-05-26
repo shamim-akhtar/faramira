@@ -6,8 +6,6 @@ using UnityEngine.SceneManagement;
 
 public class BottomMenu : MonoBehaviour
 {
-    string GameToLoad;
-
     public Button btnPrev;
     public Button btnNext;
     public Button btnTrophy;

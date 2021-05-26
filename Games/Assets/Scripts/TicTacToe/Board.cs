@@ -233,7 +233,7 @@ public class Board : MonoBehaviour
     public Text PlayerScore;
     public Text WinText;
 
-    public Button mPlayBtn;
+    //public Button mPlayBtn;
 
     int mPlayerScore = 0;
     int mAIScore = 0;
@@ -249,7 +249,8 @@ public class Board : MonoBehaviour
 
     public GameObject[] mLines;
 
-    public BottomMenu mBottomMenu;
+    //public BottomMenu mBottomMenu;
+    public GameMenuHandler mGameMenuHandler;
 
     void Start()
     {
@@ -266,16 +267,7 @@ public class Board : MonoBehaviour
         //StartCoroutine(FadeOutText(1f, WinText));
         StartCoroutine(WaitAndFadeOut(4.0f, 1.0f, WinText));
 
-        //mBottomMenu = GameApp.Instance.mBottomMenu;
-        mBottomMenu.SetActive(false);
-        //mBottomMenu.btnSound.gameObject.SetActive(true);
-        //mBottomMenu.btnPrev.gameObject.SetActive(true);
-        mBottomMenu.btnPrev.onClick.AddListener(OnClick_Back);
-    }
-
-    private void OnDisable()
-    {
-        mBottomMenu.btnPrev.onClick.RemoveListener(OnClick_Back);
+        mGameMenuHandler.onClickNextGame = OnClickPlay;
     }
 
     IEnumerator WaitAndFadeOut(float waitTime, float timeSpeed, Text text)
@@ -334,13 +326,13 @@ public class Board : MonoBehaviour
         //show line
         mLines[tt.WinID].SetActive(true);
 
-        mPlayBtn.gameObject.SetActive(true);
+        //mPlayBtn.gameObject.SetActive(true);
         StartCoroutine(FadeInText(2.0f, WinText));
         mAudioSource.PlayOneShot(mWinPlayer);
 
         // change the menu.
-        mBottomMenu.SetActive(true);
-        mBottomMenu.btnNext.gameObject.SetActive(false);
+        mGameMenuHandler.SetActiveBtnNext(true);
+        mGameMenuHandler.SetActiveBtnHome(true);
     }
 
     public void PlayerWin()
@@ -356,12 +348,12 @@ public class Board : MonoBehaviour
         WinText.text = "AI Wins";
         //show line
         mLines[tt.WinID].SetActive(true);
-        mPlayBtn.gameObject.SetActive(true);
+        //mPlayBtn.gameObject.SetActive(true);
         StartCoroutine(FadeInText(2.0f, WinText));
         mAudioSource.PlayOneShot(mWinAI);
         // change the menu.
-        mBottomMenu.SetActive(true);
-        mBottomMenu.btnNext.gameObject.SetActive(false);
+        mGameMenuHandler.SetActiveBtnNext(true);
+        mGameMenuHandler.SetActiveBtnHome(true);
     }
 
     public void AIWin()
@@ -378,13 +370,13 @@ public class Board : MonoBehaviour
         PlayerScore.text = mPlayerScore.ToString();
         WinText.text = "Draw";
 
-        mPlayBtn.gameObject.SetActive(true);
+        //mPlayBtn.gameObject.SetActive(true);
         StartCoroutine(FadeInText(2.0f, WinText));
         mAudioSource.PlayOneShot(mDraw);
 
         // change the menu.
-        mBottomMenu.SetActive(true);
-        mBottomMenu.btnNext.gameObject.SetActive(false);
+        mGameMenuHandler.SetActiveBtnNext(true);
+        mGameMenuHandler.SetActiveBtnHome(true);
     }
     public void Draw()
     {
@@ -402,7 +394,8 @@ public class Board : MonoBehaviour
 
         // now to to new game.
         mFSM.SetCurrentState((int)StateTypes.NEW_GAME);
-        mPlayBtn.gameObject.SetActive(false);
+        //mPlayBtn.gameObject.SetActive(false);
+        mGameMenuHandler.SetActiveBtnNext(false);
         StartCoroutine(FadeOutText(2.0f, WinText));
 
         for (int i = 0; i < 8; ++i)
@@ -411,7 +404,7 @@ public class Board : MonoBehaviour
         }
 
         // disable the main menu.
-        mBottomMenu.SetActive(false);
+        //mBottomMenu.SetActive(false);
     }
     public void Reset()
     {

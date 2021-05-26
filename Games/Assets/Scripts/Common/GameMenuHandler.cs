@@ -3,15 +3,21 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
-public class Maze_Level : MonoBehaviour
+public class GameMenuHandler : MonoBehaviour
 {
     public BottomMenu mBottomMenu;
     public CanvasConfirmA mConfirmExit;
+
+    public delegate void DelegateOnClickNextGame();
+    public DelegateOnClickNextGame onClickNextGame;
 
     void Start()
     {
         mConfirmExit.onClickYes = LoadMenu;
         mConfirmExit.onClickNo = DisableExitMenu;
+
+        mBottomMenu.btnPrev.gameObject.SetActive(true);
+        mBottomMenu.btnNext.gameObject.SetActive(false);
     }
 
     // Update is called once per frame
@@ -27,27 +33,26 @@ public class Maze_Level : MonoBehaviour
 
     public void OnClickNextGame()
     {
+        onClickNextGame?.Invoke();
     }
 
     public void OnClickExitGame()
     {
         mConfirmExit.gameObject.SetActive(true);
-        PauseGame();
     }
 
     public void DisableExitMenu()
     {
         mConfirmExit.gameObject.SetActive(false);
-        ResumeGame();
     }
 
-    void PauseGame()
+    public void SetActiveBtnNext(bool flag)
     {
-        //Time.timeScale = 0;
+        mBottomMenu.btnNext.gameObject.SetActive(flag);
     }
 
-    void ResumeGame()
+    public void SetActiveBtnHome(bool flag)
     {
-        //Time.timeScale = 1;
+        mBottomMenu.btnPrev.gameObject.SetActive(flag);
     }
 }
