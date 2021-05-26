@@ -209,7 +209,12 @@ public class PuzzleBoard : MonoBehaviour
         _puzzleLayout.SetSprites(_sprites);
         _puzzleLayout2.SetSprites(_sprites);
         //ID++;
-        ID = Random.Range(0, MaxImageCount);
+        int index = Random.Range(0, MaxImageCount);
+        while(index == ID)
+        {
+            index = Random.Range(0, MaxImageCount);
+        }
+        ID = index;
 
         //mBottomMenu.SetActive(false);
         mAmbientSound.ChangeAudio();
