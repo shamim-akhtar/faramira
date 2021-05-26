@@ -134,17 +134,17 @@ namespace Puzzle
         }
 
 
-        // Fade in and Fade out of UI items
-        //public static IEnumerator Coroutine_FadeIn(Image img, float t = 1.0f)
-        //{
-        //    // loop over 1 second
-        //    for (float i = 0; i <= t; i += Time.deltaTime)
-        //    {
-        //        // set color with i as alpha
-        //        img.color = new Color(img.color.r, img.color.g, img.color.b, i);
-        //        yield return null;
-        //    }
-        //}
+        //Fade in and Fade out of UI items
+        public static IEnumerator Coroutine_FadeIn(Image img, float t = 1.0f)
+        {
+            // loop over 1 second
+            for (float i = 0; i <= t; i += Time.deltaTime)
+            {
+                // set color with i as alpha
+                img.color = new Color(img.color.r, img.color.g, img.color.b, i);
+                yield return null;
+            }
+        }
 
         // Fade in and Fade out of UI items
         public static IEnumerator Coroutine_FadeOut(Image img, float t = 1.0f)

@@ -5,11 +5,11 @@ using UnityEngine.SceneManagement;
 
 public class Maze_Level : MonoBehaviour
 {
-    BottomMenu mBottomMenu;
+    public BottomMenu mBottomMenu;
     // Start is called before the first frame update
     void Start()
     {
-        mBottomMenu = GameApp.Instance.mBottomMenu;
+        //mBottomMenu = GameApp.Instance.mBottomMenu;
         mBottomMenu.SetActive(true);
         mBottomMenu.btnNext.gameObject.SetActive(false);
         mBottomMenu.btnPrev.onClick.AddListener(LoadMenu);

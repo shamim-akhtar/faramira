@@ -249,7 +249,7 @@ public class Board : MonoBehaviour
 
     public GameObject[] mLines;
 
-    BottomMenu mBottomMenu;
+    public BottomMenu mBottomMenu;
 
     void Start()
     {
@@ -266,7 +266,7 @@ public class Board : MonoBehaviour
         //StartCoroutine(FadeOutText(1f, WinText));
         StartCoroutine(WaitAndFadeOut(4.0f, 1.0f, WinText));
 
-        mBottomMenu = GameApp.Instance.mBottomMenu;
+        //mBottomMenu = GameApp.Instance.mBottomMenu;
         mBottomMenu.SetActive(false);
         //mBottomMenu.btnSound.gameObject.SetActive(true);
         //mBottomMenu.btnPrev.gameObject.SetActive(true);

@@ -5,6 +5,7 @@ using System;
 using System.Linq;
 using Patterns;
 using UnityEngine.UI;
+using UnityEngine.SceneManagement;
 
 namespace Memory
 {
@@ -65,6 +66,12 @@ namespace Memory
         public Text mScoreText;
         private int mScore = 0;
 
+        public CountDownTimerA mCountDownTimer;
+        public BottomMenu mBottomMenu;
+        public CanvasConfirmA mConfirmExit;
+
+        bool mShowingConfirmExitMenu = false;
+
         private void Awake()
         {
             mCardLayout.Add(new Tuple<int, int>(2, 2));
@@ -84,18 +91,18 @@ namespace Memory
         // Start is called before the first frame update
         void Start()
         {
+            mConfirmExit.onClickYes = LoadMenu;
+            mConfirmExit.onClickNo = DisableExitMenu;
             mFsm.Add(
                 new GameState(
                     GameState.StateID.NEW_GAME,
-                    OnEnterNewGame,
-                    OnExitNewGame,
-                    OnUpdateNewGame)
+                    OnEnterNewGame)
                 );
             mFsm.Add(
                 new GameState(
                     GameState.StateID.WAITNG_FOR_FIRST_CARD,
                     OnEnterWaitingForFirstCard,
-                    OnExitWaitingForFirstCard,
+                    null,
                     OnUpdateWaitingForFirstCard)
                 );
             mFsm.Add(
@@ -124,6 +131,11 @@ namespace Memory
                     GameState.StateID.NO_INPUT_MODE,
                     null)
                 );
+            mFsm.Add(
+                new GameState(
+                    GameState.StateID.NEXT_GAME,
+                    OnEnterNextGame)
+                );
 
             mFsm.SetCurrentState((int)GameState.StateID.NEW_GAME);
         }
@@ -139,17 +151,11 @@ namespace Memory
             mSecondMaskIndex = -1;
             mTotalCardsShown = 0;
 
-            Debug.Log("Enter: NEW_GAME");
+            mBottomMenu.btnPrev.gameObject.SetActive(false);
+            mBottomMenu.btnNext.gameObject.SetActive(false);
+
+            //Debug.Log("Enter: NEW_GAME");
             CreateLevel(mLevel - 1);
-        }
-
-        void OnExitNewGame()
-        {
-        }
-
-        void OnUpdateNewGame()
-        {
-
         }
         #endregion
 
@@ -163,11 +169,8 @@ namespace Memory
             mFirstMaskIndex = -1;
             mSecondMaskIndex = -1;
 
-            Debug.Log("Enter: WAITNG_FOR_FIRST_CARD");
+            //Debug.Log("Enter: WAITNG_FOR_FIRST_CARD");
             StartCoroutine(Coroutine_AskPlayerToMakeFirstMove(2.0f));
-        }
-        void OnExitWaitingForFirstCard()
-        {
         }
 
         // A coroutine to display message to the user every 
@@ -176,7 +179,7 @@ namespace Memory
         {
             while (!mMadeFirstMove)
             {
-                Debug.Log("Make your first move by clicking on any card");
+                //Debug.Log("Make your first move by clicking on any card");
                 yield return new WaitForSeconds(waitTime);
             }
         }
@@ -190,7 +193,7 @@ namespace Memory
         #region FIRST_CARD delegate calls
         void OnEnterFirstCard()
         {
-            Debug.Log("Enter: FIRST_CARD");
+            //Debug.Log("Enter: FIRST_CARD");
         }
         void OnExitFirstCard()
         {
@@ -239,7 +242,7 @@ namespace Memory
 
         void OnEnterSecondCard()
         {
-            Debug.Log("Enter: SECOND_CARD");
+            //Debug.Log("Enter: SECOND_CARD");
 
             // check if the first card and the second card are the same.
             // if they are the same then keep them open and go to
@@ -252,13 +255,13 @@ namespace Memory
                 }
                 else
                 {
-                    Debug.Log("Great Job. You have found a matching card");
+                    //Debug.Log("Great Job. You have found a matching card");
                     StartCoroutine(Coroutine_FirstCardSecondCardSame());
                 }
             }
             else
             {
-                Debug.Log("Oh no! You did not find a matching card");
+                //Debug.Log("Oh no! You did not find a matching card");
                 StartCoroutine(Coroutine_FirstCardSecondCardNotSame());
             }
         }
@@ -287,7 +290,8 @@ namespace Memory
         void OnEnterWin()
         {
             Debug.Log("Enter: WIN. Starting new game");
-            StartCoroutine(Coroutine_StartNewGame());
+            //StartCoroutine(Coroutine_StartNewGame());
+            mFsm.SetCurrentState((int)GameState.StateID.NEXT_GAME);
         }
 
         void OnExitWin()
@@ -297,6 +301,18 @@ namespace Memory
         void OnUpdateWin()
         {
             //HandleMouseClick();
+        }
+
+        void OnEnterNextGame()
+        {
+            mBottomMenu.btnPrev.gameObject.SetActive(true);
+            mBottomMenu.btnNext.gameObject.SetActive(true);
+        }
+
+               
+        void LoadMenu()
+        {
+            SceneManager.LoadScene("MainMenu");
         }
         #endregion
 
@@ -404,7 +420,7 @@ namespace Memory
             Camera.main.orthographicSize = total_w + 1.0f + mLevel * 1.2f;
 
             // shuffle the cards.
-            Debug.Log("Shuffling");
+            //Debug.Log("Shuffling");
             Shuffle();
         }
 
@@ -420,12 +436,18 @@ namespace Memory
             while(t < totalTime)
             {
                 t += dt;
-                Debug.Log("Coroutine_CountdownTimer: " + t);
+                //Debug.Log("Coroutine_CountdownTimer: " + t);
                 yield return new WaitForSeconds(dt);
             }
 
-            Debug.Log("Coroutine_SetSpritesToCardMasks");
+            //Debug.Log("Coroutine_SetSpritesToCardMasks");
             StartCoroutine(Coroutine_SetSpritesToCardMasks());
+        }
+
+        void SetSpritesToCardMasks()
+        {
+            StartCoroutine(Coroutine_SetSpritesToCardMasks());
+            mBottomMenu.btnPrev.gameObject.SetActive(true);
         }
 
         IEnumerator Coroutine_SetSpritesToCards()
@@ -438,8 +460,11 @@ namespace Memory
                 yield return new WaitForSeconds(0.05f);
             }
 
-            Debug.Log("Coroutine_CountdownTimer");
-            StartCoroutine(Coroutine_CountdownTimer(1.0f, 5.0f));
+            //Debug.Log("Coroutine_CountdownTimer");
+            //StartCoroutine(Coroutine_CountdownTimer(1.0f, 3.0f));
+            //
+            mCountDownTimer.OnFinishCountDown = SetSpritesToCardMasks;
+            StartCoroutine(mCountDownTimer.Coroutine_StartCountDown(3.0f));
         }
 
         IEnumerator Coroutine_SetSpritesToCardMasks()
@@ -487,18 +512,6 @@ namespace Memory
         void Update()
         {
             mFsm.Update();
-            //if (Input.GetKeyDown(KeyCode.Space))
-            //{
-            //    Shuffle();
-            //}
-            //if (Input.GetKeyDown(KeyCode.Tab))
-            //{
-            //    ApplyMasks();
-            //}
-            //if (Input.GetKeyDown(KeyCode.LeftControl))
-            //{
-            //    CreateLevel(UnityEngine.Random.Range(0, mCardLayout.Count));
-            //}
         }
 
         void RemoveMask(GameObject obj)
@@ -513,7 +526,7 @@ namespace Memory
                 mFirstCardName = mCards[mFirstMaskIndex].name;
                 mFsm.SetCurrentState((int)GameState.StateID.FIRST_CARD);
 
-                Debug.Log("Index = " + mFirstMaskIndex + " , First card name: " + mFirstCardName);
+                //Debug.Log("Index = " + mFirstMaskIndex + " , First card name: " + mFirstCardName);
             }
             else if(!mMadeSecondMove)
             {
@@ -521,12 +534,13 @@ namespace Memory
                 mSecondMaskIndex = Int32.Parse(obj.name);
                 mSecondCardName = mCards[mSecondMaskIndex].name;
                 mFsm.SetCurrentState((int)GameState.StateID.SECOND_CARD);
-                Debug.Log("Index = " + mSecondMaskIndex + " , Second card name: " + mSecondCardName);
+                //Debug.Log("Index = " + mSecondMaskIndex + " , Second card name: " + mSecondCardName);
             }
         }
 
         void HandleMouseClick()
         {
+            if (mShowingConfirmExitMenu) return;
             if (Input.GetMouseButtonDown(0))
             {
                 GameObject selected = Puzzle.Utils.Pick2D();
@@ -539,6 +553,23 @@ namespace Memory
                     }
                 }
             }
+        }
+
+        public void OnClickNextGame()
+        {
+            StartCoroutine(Coroutine_StartNewGame());
+        }
+
+        public void OnClickExitGame()
+        {
+            mConfirmExit.gameObject.SetActive(true);
+            mShowingConfirmExitMenu = true;
+        }
+
+        void DisableExitMenu()
+        {
+            mConfirmExit.gameObject.SetActive(false);
+            mShowingConfirmExitMenu = false;
         }
     }
 }

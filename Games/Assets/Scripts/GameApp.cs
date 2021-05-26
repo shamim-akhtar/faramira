@@ -7,7 +7,7 @@ using UnityEngine.SceneManagement;
 public class GameApp : Singleton<GameApp>
 {
     public AmbientSound mAmbientSound;
-    public BottomMenu mBottomMenu;
+    //public BottomMenu mBottomMenu;
     public AudioClip[] mAudioClips;
 
     Dictionary<string, AudioClip> sceneAudios = new Dictionary<string, AudioClip>();

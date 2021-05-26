@@ -164,7 +164,7 @@ public class PuzzleBoard : MonoBehaviour
         _fsm.SetCurrentState((int)GameState.StateID.FADEIN);
         audioSource.Play();
 
-        mBottomMenu = GameApp.Instance.mBottomMenu;
+        //mBottomMenu = GameApp.Instance.mBottomMenu;
         mBottomMenu.SetActive(true);
         mBottomMenu.btnNext.gameObject.SetActive(false);
         mBottomMenu.btnPrev.onClick.AddListener(LoadMenu);

@@ -15,6 +15,7 @@ namespace Memory
             SECOND_CARD,
             WIN,
             NO_INPUT_MODE,
+            NEXT_GAME,
         };
         //protected BoardMemory mBoard;
         //protected FiniteStateMachine mFsm;

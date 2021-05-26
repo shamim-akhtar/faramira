@@ -18,8 +18,6 @@ public class BottomMenu : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        btnPrev.gameObject.SetActive(false);
-        btnNext.gameObject.SetActive(false);
         btnTrophy.gameObject.SetActive(false);
         btnSound.gameObject.SetActive(false);
         btnLeader.gameObject.SetActive(false);
@@ -39,17 +37,11 @@ public class BottomMenu : MonoBehaviour
         if (flag)
         {
             btnPrev.gameObject.SetActive(true);
-            btnTrophy.gameObject.SetActive(false);
-            btnSound.gameObject.SetActive(false);
-            btnLeader.gameObject.SetActive(false);
             btnNext.gameObject.SetActive(true);
         }
         else
         {
             btnPrev.gameObject.SetActive(false);
-            btnTrophy.gameObject.SetActive(false);
-            btnSound.gameObject.SetActive(false);
-            btnLeader.gameObject.SetActive(false);
             btnNext.gameObject.SetActive(false);
         }
     }

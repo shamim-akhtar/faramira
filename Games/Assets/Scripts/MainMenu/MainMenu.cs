@@ -3,21 +3,31 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
+using UnityEngine.EventSystems;
 
 public class MainMenu : MonoBehaviour
 {
     string GameToLoad;
 
-    BottomMenu mBottomMenu;
-    // Start is called before the first frame update
+    public BottomMenu mBottomMenu;
+    public Transform mGameButtonList;
+
     void Start()
     {
-        mBottomMenu = GameApp.Instance.mBottomMenu;
-        mBottomMenu.SetActive(true);
         mBottomMenu.btnPrev.gameObject.SetActive(false);
         mBottomMenu.btnNext.gameObject.SetActive(false);
 
         mBottomMenu.btnNext.onClick.AddListener(OnClick_Next);
+
+        for(int i = 0; i <mGameButtonList.childCount; ++i)
+        {
+            Transform child = mGameButtonList.GetChild(i);
+            Button btn = child.gameObject.GetComponent<Button>();
+            if(btn != null)
+            {
+                btn.onClick.AddListener(OnClickPlayGame);
+            }
+        }
     }
 
     private void OnDisable()
@@ -31,40 +41,10 @@ public class MainMenu : MonoBehaviour
         
     }
 
-    public void OnClick_Play_TicTacToe()
+    public void OnClickPlayGame()
     {
-        GameToLoad = "TicTacToe";
-        GameApp.Instance.mBottomMenu.btnNext.gameObject.SetActive(true);
-    }
-
-    public void OnClick_Play_8Puzzle()
-    {
-        GameToLoad = "8Puzzle";
-        GameApp.Instance.mBottomMenu.btnNext.gameObject.SetActive(true);
-    }
-
-    public void OnClick_Play_Maze()
-    {
-        GameToLoad = "Maze";
-        GameApp.Instance.mBottomMenu.btnNext.gameObject.SetActive(true);
-    }
-
-    public void OnClick_Play_Memory()
-    {
-        GameToLoad = "Memory";
-        GameApp.Instance.mBottomMenu.btnNext.gameObject.SetActive(true);
-    }
-
-    public void OnClick_Play_Tetris()
-    {
-        GameToLoad = "Tetris";
-        GameApp.Instance.mBottomMenu.btnNext.gameObject.SetActive(true);
-    }
-
-    public void OnClick_Play_Quiz()
-    {
-        GameToLoad = "Quiz";
-        GameApp.Instance.mBottomMenu.btnNext.gameObject.SetActive(true);
+        GameToLoad = EventSystem.current.currentSelectedGameObject.name;
+        mBottomMenu.btnNext.gameObject.SetActive(true);
     }
 
     public void OnClick_Next()
