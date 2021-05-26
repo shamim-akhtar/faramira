@@ -6,6 +6,7 @@ public class SceneAmbientSound : AmbientSound
 {
     public AudioClip[] mAudioClips;
     public CanvasConfirmA mConfirmExit;
+    public bool mPlaySoundOnStart = false;
 
     int mIndex = 0;
     void OnSceneExitFadeOut(float t)
@@ -15,16 +16,22 @@ public class SceneAmbientSound : AmbientSound
         else audioSource = mAudioSource2;
         audioSource.volume *= t;
 
-        Debug.Log("Volume: " + audioSource.volume);
+        //Debug.Log("Volume: " + audioSource.volume);
     }
 
     private void Start()
     {
         AudioListener.volume = 0.8f;
-        mConfirmExit.OnSceneExiting += OnSceneExitFadeOut;
+        if (mConfirmExit != null)
+        {
+            mConfirmExit.OnSceneExiting += OnSceneExitFadeOut;
+        }
 
-        //int index = Random.Range(0, mAudioClips.Length);
-        //Play(mAudioClips[index]);
+        if (mPlaySoundOnStart)
+        {
+            mIndex= Random.Range(0, mAudioClips.Length);
+            Play(mAudioClips[mIndex]);
+        }
     }
 
     public void ChangeAudio()

@@ -313,6 +313,7 @@ public class Board : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        if (mGameMenuHandler.mShowingExitPopup) return;
         //CheckMouseClick();
         mFSM.Update();
     }

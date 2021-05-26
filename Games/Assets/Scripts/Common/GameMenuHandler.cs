@@ -11,7 +11,9 @@ public class GameMenuHandler : MonoBehaviour
     public delegate void DelegateOnClickNextGame();
     public DelegateOnClickNextGame onClickNextGame;
 
+    [HideInInspector]
     public bool mShowingExitPopup = false;
+    public bool mOpaqueBackground = false;
 
     void Start()
     {
@@ -42,12 +44,20 @@ public class GameMenuHandler : MonoBehaviour
     {
         mConfirmExit.gameObject.SetActive(true);
         mShowingExitPopup = true;
+        if(mOpaqueBackground)
+        {
+            mConfirmExit.mBackground.gameObject.SetActive(true);
+        }
     }
 
     public void DisableExitMenu()
     {
         mConfirmExit.gameObject.SetActive(false);
         mShowingExitPopup = false;
+        if (mOpaqueBackground)
+        {
+            mConfirmExit.mBackground.gameObject.SetActive(false);
+        }
     }
 
     public void SetActiveBtnNext(bool flag)

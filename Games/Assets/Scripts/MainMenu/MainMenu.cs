@@ -11,13 +11,15 @@ public class MainMenu : MonoBehaviour
 
     public BottomMenu mBottomMenu;
     public Transform mGameButtonList;
+    public SceneAmbientSound mAmbientSound;
+    public CanvasConfirmA mExitConfirm;
 
     void Start()
     {
         mBottomMenu.btnPrev.gameObject.SetActive(false);
         mBottomMenu.btnNext.gameObject.SetActive(false);
 
-        mBottomMenu.btnNext.onClick.AddListener(OnClick_Next);
+        //mBottomMenu.btnNext.onClick.AddListener(OnClick_Next);
 
         for(int i = 0; i <mGameButtonList.childCount; ++i)
         {
@@ -28,11 +30,13 @@ public class MainMenu : MonoBehaviour
                 btn.onClick.AddListener(OnClickPlayGame);
             }
         }
+
+        mExitConfirm.onClickYes += OnClick_Next;
     }
 
     private void OnDisable()
     {
-        mBottomMenu.btnNext.onClick.RemoveListener(OnClick_Next);
+        //mBottomMenu.btnNext.onClick.RemoveListener(OnClick_Next);
     }
 
     // Update is called once per frame

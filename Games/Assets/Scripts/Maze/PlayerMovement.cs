@@ -94,7 +94,7 @@ public class PlayerMovement : MonoBehaviour
                 Vector3 a = mPlayer.transform.position;
                 Vector3 b = new Vector3(i + mGenerator.START_X, j + mGenerator.START_Y - 1, 0.0f);
 
-                Debug.Log(a + ", " + b);
+                //Debug.Log(a + ", " + b);
                 StartCoroutine(Coroutine_MoveOverSeconds(mPlayer, 
                     new Vector3(
                         i + mGenerator.START_X,
@@ -156,7 +156,7 @@ public class PlayerMovement : MonoBehaviour
             if (!(i < 0 || j < 0 || i > mGenerator.cols - 1 || j > mGenerator.rows - 1))
             {
                 Maze.Cell cell = mGenerator.maze.GetCell(i, j);
-                Debug.Log(i + ", " + j + " | " + cell.flag[0] + ", " + cell.flag[1] + ", " + cell.flag[2] + ", " + cell.flag[3]);
+                //Debug.Log(i + ", " + j + " | " + cell.flag[0] + ", " + cell.flag[1] + ", " + cell.flag[2] + ", " + cell.flag[3]);
                 //Debug.Log(i + ", " + j);
 
                 mGenerator.HighlightCell(i, j, true);

@@ -214,7 +214,7 @@ namespace Tetris
         {
             StartCoroutine(AmbientSound.Coroutine_PlayShot(mAudioSource, mLostAudioClip));
             StartCoroutine(Coroutine_OnLost());
-            Debug.Log("Game ended");
+            //Debug.Log("Game ended");
         }
 
         IEnumerator Coroutine_ClearBoard()
@@ -470,7 +470,7 @@ namespace Tetris
             }
             mLinesRemoved += 1;
             mLinesText.text = (GetLinesToClearLevel(mLevel) - mLinesRemoved).ToString();
-            Debug.Log("mLinesRemoved: " + mLinesRemoved);
+            //Debug.Log("mLinesRemoved: " + mLinesRemoved);
             UpdateScore();
             mLastLineRemovedTime = Time.time - mLastLineRemovedTime;
         }

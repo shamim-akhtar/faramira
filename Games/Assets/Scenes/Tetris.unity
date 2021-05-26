@@ -2692,6 +2692,7 @@ MonoBehaviour:
   mAudioClips:
   - {fileID: 8300000, guid: 62679fb50a5fcf043bb755be5bd56881, type: 3}
   mConfirmExit: {fileID: 1330123638}
+  mPlaySoundOnStart: 1
 --- !u!82 &1662078070
 AudioSource:
   m_ObjectHideFlags: 0

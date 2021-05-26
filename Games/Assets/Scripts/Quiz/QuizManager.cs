@@ -47,20 +47,22 @@ namespace Trivia
             int mCorrectIndex;
         }
 
-        public Button mBtnNext;
-        public Button mBtnExitToMainMenu;
+        //public Button mBtnNext;
+        //public Button mBtnExitToMainMenu;
+        //public Button mExitYes;
+        //public Button mExitNo;
 
         public Button[] mBtnOptions;
         public Text mTextQuestion;
         public Text[] mTextOptions;
         public Text mTextTimer;
         public Text mExitQuizText;
-        public Button mExitYes;
-        public Button mExitNo;
 
         public AudioSource mAudioSource;
         public AudioClip mAudioClipNoResponse;
         public AudioClip mAudioClipResponse;
+
+        public GameMenuHandler mGameMenuHandler;
 
         public int mTimeLimit = 10;
         float mTimerStartTime = 0.0f;
@@ -119,6 +121,8 @@ namespace Trivia
                     OnEnterExit)
                 );
             mFsm.SetCurrentState((int)GameState.StateID.NEW_QUESTION);
+
+            mGameMenuHandler.onClickNextGame += OnNextQuestion;
         }
 
         // Update is called once per frame
@@ -150,35 +154,15 @@ namespace Trivia
 
             for(int i = 0; i < mBtnOptions.Length; ++i)
             {
-                //mBtnOptions[i].enabled = false;
                 mBtnOptions[i].interactable = false;
             }
 
             mResponse = true;
         }
 
-        public void OnClickNextQuestion()
+        public void OnNextQuestion()
         {
             mFsm.SetCurrentState((int)GameState.StateID.NEW_QUESTION);
-        }
-
-        public void OnClickExitToMainMenu()
-        {
-            mFsm.SetCurrentState((int)GameState.StateID.EXIT);
-        }
-
-        public void OnClickExitNo()
-        {
-            mExitYes.gameObject.SetActive(false);
-            mExitNo.gameObject.SetActive(false);
-            mExitQuizText.gameObject.SetActive(false);
-            mBtnNext.gameObject.SetActive(true);
-            mBtnExitToMainMenu.gameObject.SetActive(true);
-        }
-
-        public void OnClickExitYes()
-        {
-            SceneManager.LoadScene("MainMenu");
         }
 
         #region QUIZ FSM
@@ -209,13 +193,9 @@ namespace Trivia
             mCurrentQuestion = GetNextQuestion();
             mResponse = false;
             mResponseIndex = -1;
-            mBtnNext.gameObject.SetActive(false);
 
-            mBtnNext.gameObject.SetActive(false);
-            mExitYes.gameObject.SetActive(false);
-            mExitNo.gameObject.SetActive(false);
-            mExitQuizText.gameObject.SetActive(false);
-            mBtnExitToMainMenu.gameObject.SetActive(false);
+            mGameMenuHandler.SetActiveBtnHome(false);
+            mGameMenuHandler.SetActiveBtnNext(false);
 
             StartCoroutine(Coroutine_ShowQuestion());
         }
@@ -226,7 +206,8 @@ namespace Trivia
         }
         void OnUpdateTimer()
         {
-            mTextTimer.text = ((int)(Time.time - mTimerStartTime)).ToString();
+            float dt = Time.time - mTimerStartTime;
+            mTextTimer.text = ((int)(mTimeLimit - dt + 1)).ToString();
 
             if (Time.time - mTimerStartTime > mTimeLimit)
             {
@@ -241,8 +222,8 @@ namespace Trivia
 
         IEnumerator Coroutine_NoResponse()
         {
-            yield return StartCoroutine(AmbientSound.Coroutine_PlayShot(mAudioSource, mAudioClipNoResponse));
             mFsm.SetCurrentState((int)GameState.StateID.SHOW_RESULTS);
+            yield return StartCoroutine(AmbientSound.Coroutine_PlayShot(mAudioSource, mAudioClipNoResponse));
         }
         void OnEnterNoResponse()
         {
@@ -254,12 +235,12 @@ namespace Trivia
             if (mResponseIndex == mCurrentQuestion.CorrectAnswerIndex)
             {
                 mFsm.SetCurrentState((int)GameState.StateID.SHOW_RESULTS);
-                yield return StartCoroutine(AmbientSound.Coroutine_PlayShot(mAudioSource, mAudioClipResponse));
+                yield return StartCoroutine(AmbientSound.Coroutine_PlayShot(mAudioSource, mAudioClipResponse, 0.50f));
             }
             else
             {
                 mFsm.SetCurrentState((int)GameState.StateID.SHOW_RESULTS);
-                yield return StartCoroutine(AmbientSound.Coroutine_PlayShot(mAudioSource, mAudioClipNoResponse));
+                yield return StartCoroutine(AmbientSound.Coroutine_PlayShot(mAudioSource, mAudioClipNoResponse, 0.75f));
             }
         }
         void OnEnterResponse()
@@ -279,6 +260,7 @@ namespace Trivia
                 {
                     mResultsImage[i].sprite = mCrossSprite;
                 }
+                mBtnOptions[i].interactable = false;
                 mResultsImage[i].gameObject.SetActive(true);
 
                 yield return new WaitForSeconds(0.1f);
@@ -293,17 +275,12 @@ namespace Trivia
 
         void OnEnterShowfeedback()
         {
-            mBtnNext.gameObject.SetActive(true);
-            mBtnExitToMainMenu.gameObject.SetActive(true);
+            mGameMenuHandler.SetActiveBtnHome(true);
+            mGameMenuHandler.SetActiveBtnNext(true);
         }
 
         void OnEnterExit()
         {
-            mExitQuizText.gameObject.SetActive(true);
-            mExitYes.gameObject.SetActive(true);
-            mExitNo.gameObject.SetActive(true);
-            mBtnNext.gameObject.SetActive(false);
-            mBtnExitToMainMenu.gameObject.SetActive(false);
         }
         #endregion
     }
