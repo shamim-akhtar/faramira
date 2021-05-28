@@ -636,6 +636,7 @@ MonoBehaviour:
   DbValue: 0
   PitchValue: 0
   mTile: {fileID: 767050270}
+  duration: 0.01
 --- !u!82 &1962679945
 AudioSource:
   m_ObjectHideFlags: 0

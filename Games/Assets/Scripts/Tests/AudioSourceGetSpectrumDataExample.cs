@@ -131,14 +131,14 @@ public class AudioSourceGetSpectrumDataExample : MonoBehaviour
     IEnumerator Coroutine_EnableForDuration(SpriteRenderer img)
     {
         //img.gameObject.SetActive(true);
-        yield return StartCoroutine(Puzzle.Utils.Coroutine_FadeIn(img, 0.2f));
+        yield return StartCoroutine(Puzzle.Utils.Coroutine_FadeIn(img, 0.1f));
         yield return new WaitForSeconds(0.2f);
-        yield return StartCoroutine(Puzzle.Utils.Coroutine_FadeOut(img, 0.2f));
+        yield return StartCoroutine(Puzzle.Utils.Coroutine_FadeOut(img, 0.1f));
         //img.gameObject.SetActive(false);
     }
 
 
-    float duration = 0.3f;
+    public float duration = 0.1f;
     float mLastTime = 0.0f;
     void InstantiateNotes(float v)
     {
