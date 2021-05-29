@@ -71,7 +71,64 @@ namespace Maze
             return _rows * _cols;
         }
 
-        public List<Tuple<Directions, Cell>> GetNeighbours(int cx, int cy)
+        public List<Tuple<Maze.Directions, Maze.Cell>> GetNeighbours(int cx, int cy)
+        {
+            List<Tuple<Maze.Directions, Maze.Cell>> neighbours = new List<Tuple<Maze.Directions, Maze.Cell>>();
+            foreach (Maze.Directions dir in Enum.GetValues(typeof(Maze.Directions)))
+            {
+                int x = cx;
+                int y = cy;
+
+                switch (dir)
+                {
+                    case Maze.Directions.UP:
+                        if (y < _rows - 1)
+                        {
+                            ++y;
+                            neighbours.Add(new Tuple<Maze.Directions, Maze.Cell>(
+                                Maze.Directions.UP,
+                                GetCell(x, y))
+                            );
+                        }
+                        break;
+                    case Maze.Directions.RIGHT:
+                        if (x < _cols - 1)
+                        {
+                            ++x;
+                            neighbours.Add(new Tuple<Maze.Directions, Maze.Cell>(
+                                Maze.Directions.RIGHT,
+                                GetCell(x, y))
+                            );
+                        }
+                        break;
+                    case Maze.Directions.DOWN:
+                        if (y > 0)
+                        {
+                            --y;
+                            neighbours.Add(new Tuple<Maze.Directions, Maze.Cell>(
+                                Maze.Directions.DOWN,
+                                GetCell(x, y))
+                            );
+                        }
+                        break;
+                    case Maze.Directions.LEFT:
+                        if (x > 0)
+                        {
+                            --x;
+                            neighbours.Add(new Tuple<Maze.Directions, Maze.Cell>(
+                                Maze.Directions.LEFT,
+                                GetCell(x, y))
+                            );
+                        }
+                        break;
+                    default:
+                        break;
+                }
+            }
+            return neighbours;
+        }
+
+        public List<Tuple<Directions, Cell>> GetNeighboursNotVisited(int cx, int cy)
         {
             List<Tuple<Directions, Cell>> neighbours = new List<Tuple<Directions, Cell>>();
             foreach (Directions dir in Enum.GetValues(typeof(Directions)))
@@ -81,14 +138,14 @@ namespace Maze
 
                 switch (dir)
                 {
-                    case Directions.DOWN:
+                    case Directions.UP:
                         if (y < _rows - 1)
                         {
                             ++y;
                             if (!_cells[x, y].visited)
                             {
                                 neighbours.Add(new Tuple<Directions, Cell>(
-                                  Directions.DOWN,
+                                  Directions.UP,
                                   _cells[x, y])
                                 );
                             }
@@ -107,14 +164,14 @@ namespace Maze
                             }
                         }
                         break;
-                    case Directions.UP:
+                    case Directions.DOWN:
                         if (y > 0)
                         {
                             --y;
                             if (!_cells[x, y].visited)
                             {
                                 neighbours.Add(new Tuple<Directions, Cell>(
-                                  Directions.UP,
+                                  Directions.DOWN,
                                   _cells[x, y])
                                 );
                             }
@@ -152,10 +209,10 @@ namespace Maze
             switch (dir)
             {
                 case Directions.UP:
-                    if (y > 0)
+                    if (y < _rows - 1)
                     {
                         opp = Directions.DOWN;
-                        --y;
+                        ++y;
                     }
                     break;
                 case Directions.RIGHT:
@@ -166,10 +223,10 @@ namespace Maze
                     }
                     break;
                 case Directions.DOWN:
-                    if (y < _rows - 1)
+                    if (y > 0)
                     {
                         opp = Directions.UP;
-                        ++y;
+                        --y;
                     }
                     break;
                 case Directions.LEFT:

@@ -1,6 +1,8 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using PathFinding;
+using System;
 
 namespace Maze
 {
@@ -95,23 +97,12 @@ namespace Maze
 
             if (player_moving) return;
 
-            // note that UP and DOWN are opposite. Need to fix this issue.
-            // althogh it is working, we need to be consistent.
             if (!cell.flag[0])
             {
-                // can go down.
-                if (j > 0 && my < 0.0f/* && Mathf.Abs(my) > Mathf.Abs(mx)*/)
+                if (j < mGenerator.rows - 1 && my > 0.0f/* && Mathf.Abs(my) > Mathf.Abs(mx)*/)
                 {
-                    Vector3 a = mPlayer.transform.position;
-                    Vector3 b = new Vector3(i + mGenerator.START_X, j + mGenerator.START_Y - 1, 0.0f);
-
-                    //Debug.Log(a + ", " + b);
-                    StartCoroutine(Coroutine_MoveOverSeconds(mPlayer,
-                        new Vector3(
-                            i + mGenerator.START_X,
-                            j + mGenerator.START_Y - 1,
-                            0.0f),
-                        1.0f / mSpeed));
+                    StartCoroutine(Coroutine_MoveOverSeconds(mPlayer, new Vector3(i + mGenerator.START_X,
+                        j + mGenerator.START_Y + 1, 0.0f), 1.0f / mSpeed));
                 }
             }
             if (!cell.flag[1])
@@ -125,11 +116,18 @@ namespace Maze
             }
             if (!cell.flag[2])
             {
-                // can go up
-                if (j < mGenerator.rows - 1 && my > 0.0f/* && Mathf.Abs(my) > Mathf.Abs(mx)*/)
+                if (j > 0 && my < 0.0f/* && Mathf.Abs(my) > Mathf.Abs(mx)*/)
                 {
-                    StartCoroutine(Coroutine_MoveOverSeconds(mPlayer, new Vector3(i + mGenerator.START_X,
-                        j + mGenerator.START_Y + 1, 0.0f), 1.0f / mSpeed));
+                    Vector3 a = mPlayer.transform.position;
+                    Vector3 b = new Vector3(i + mGenerator.START_X, j + mGenerator.START_Y - 1, 0.0f);
+
+                    //Debug.Log(a + ", " + b);
+                    StartCoroutine(Coroutine_MoveOverSeconds(mPlayer,
+                        new Vector3(
+                            i + mGenerator.START_X,
+                            j + mGenerator.START_Y - 1,
+                            0.0f),
+                        1.0f / mSpeed));
                 }
             }
             if (!cell.flag[3])

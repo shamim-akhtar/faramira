@@ -30,6 +30,7 @@ namespace Maze
         // Start is called before the first frame update
         void Start()
         {
+            //UnityEngine.Random.InitState(42);
 
             START_Y = -rows / 2;
             START_X = -cols / 2;
@@ -113,9 +114,8 @@ namespace Maze
             if (_stack.Count == 0) return true;
 
             Maze.Cell c = _stack.Peek();
-            //SetMousePosition(c.x, c.y);
 
-            var neighbours = maze.GetNeighbours(c.x, c.y);
+            var neighbours = maze.GetNeighboursNotVisited(c.x, c.y);
 
             if (neighbours.Count != 0)
             {
@@ -130,7 +130,6 @@ namespace Maze
                 maze.RemoveCellWall(c.x, c.y, item.Item1);
 
                 _stack.Push(neighbour);
-                //SetMousePosition(neighbour.x, neighbour.y);
             }
             else
             {
@@ -149,6 +148,7 @@ namespace Maze
             }
             mMazeGenerated = true;
         }
+
 
         // Update is called once per frame
         void Update()
