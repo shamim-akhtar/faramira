@@ -9,6 +9,7 @@ namespace Maze
     {
         public GameMenuHandler mMenuHandler;
         public GameObject mNpcPrefab;
+        public GameObject mGoldPrefab;
 
         // The generator prefab that generates the Maze.
         public GameObject mGeneratorPrefab;
@@ -18,6 +19,9 @@ namespace Maze
 
         private Generator mCurrentGenerator;
         private PlayerMovement mPlayerMovement;
+
+        List<MazePathFinder> mNPCs = new List<MazePathFinder>();
+        List<GameObject> mGolds = new List<GameObject>();
 
         void Start()
         {
@@ -87,6 +91,8 @@ namespace Maze
 
             mFsm.SetCurrentState((int)GameState.StateID.GENERATING_MAZE);
 
+            StartCoroutine(Coroutine_Spawn_Gold());
+
         }
 
         void OnEnterGeneratingMaze()
@@ -104,7 +110,11 @@ namespace Maze
         }
         void OnEnterPlaying()
         {
-            // show the joystick.
+            StartCoroutine(Coroutine_Spawn_NPC());
+        }
+        void OnExitPlaying()
+        {
+            StopCoroutine(Coroutine_Spawn_NPC());
         }
 
         void OnUpdatePlaying()
@@ -113,7 +123,18 @@ namespace Maze
 
             // TEST
             // handle input to create NPC.
-            HandleMouseClick();
+            //HandleMouseClick();
+
+            // check for collision with NPCs
+            for(int i = 0; i < mNPCs.Count; ++i)
+            {
+                if(
+                    Mathf.Abs(mNPCs[i].transform.position.x - mPlayerMovement.mPlayer.transform.position.x) < 0.5f &&
+                    Mathf.Abs(mNPCs[i].transform.position.y - mPlayerMovement.mPlayer.transform.position.y) < 0.5f)
+                {
+                    mFsm.SetCurrentState((int)GameState.StateID.LOSE);
+                }
+            }
         }
 
         void HandleMouseClick()
@@ -128,10 +149,10 @@ namespace Maze
                     Camera.main.ScreenToWorldPoint(Input.mousePosition).y
                 );
 
-                Debug.Log("POSR: " + rayPos.x + ", " + rayPos.y);
+                //Debug.Log("POSR: " + rayPos.x + ", " + rayPos.y);
                 int x = (int)rayPos.x - mCurrentGenerator.START_X;
                 int y = (int)rayPos.y - mCurrentGenerator.START_Y;
-                Debug.Log("POS : " + x + ", " + y);
+                //Debug.Log("POS : " + x + ", " + y);
 
                 if (x < 0 || x >= mCurrentGenerator.cols || y < 0 || y >= mCurrentGenerator.rows) return;
                 Maze.Cell cell = mCurrentGenerator.maze.GetCell(x, y);
@@ -140,25 +161,126 @@ namespace Maze
                 MazePathFinder mpf = npc.AddComponent<MazePathFinder>();
                 mpf.mGenerator = mCurrentGenerator;
                 mpf.mNpc = npc;
-                mpf.mSpeed = 2.0f;
+                mpf.mSpeed = 1.0f;
 
                 // player position.
                 int dx = (int)mPlayerMovement.mPlayer.transform.position.x - mCurrentGenerator.START_X;
                 int dy = (int)mPlayerMovement.mPlayer.transform.position.y - mCurrentGenerator.START_Y;
                 mpf.FindPath(cell, mCurrentGenerator.maze.GetCell(dx, dy));
 
+                mNPCs.Add(mpf);
+
             }
         }
 
+        #region SPAWN_ENEMIES
+        IEnumerator Coroutine_Spawn_NPC(float duration = 10.0f)
+        {
+            while (mFsm.GetCurrentState().ID == (int)GameState.StateID.PLAYING)
+            {
+                //
+                //Maze.Cell goal = mCurrentGenerator.maze.GetCell(mCurrentGenerator.cols - 1, mCurrentGenerator.rows - 1);
+                //int sx = goal.x + mCurrentGenerator.START_X;
+                //int sy = goal.y + mCurrentGenerator.START_Y;
+
+                int rx = Random.Range(0, mCurrentGenerator.cols);
+                int ry = Random.Range(0, mCurrentGenerator.rows);
+
+                int sx = rx + mCurrentGenerator.START_X;
+                int sy = ry + mCurrentGenerator.START_Y;
+
+                Maze.Cell startCell = mCurrentGenerator.maze.GetCell(rx, ry);
+
+                GameObject npc = Instantiate(mNpcPrefab, new Vector3(sx, sy, 0.0f), Quaternion.identity);
+                MazePathFinder mpf = npc.AddComponent<MazePathFinder>();
+                mpf.mGenerator = mCurrentGenerator;
+                mpf.mNpc = npc;
+                mpf.mSpeed = 1.0f;
+
+                // player position.
+                int dx = (int)mPlayerMovement.mPlayer.transform.position.x - mCurrentGenerator.START_X;
+                int dy = (int)mPlayerMovement.mPlayer.transform.position.y - mCurrentGenerator.START_Y;
+                mpf.FindPath(startCell, mCurrentGenerator.maze.GetCell(dx, dy));
+
+                mNPCs.Add(mpf);
+                yield return new WaitForSeconds(duration);
+            }
+        }
+        IEnumerator Coroutine_Spawn_Gold(int count = 5)
+        {
+            for(int i = 0; i < count; ++i)
+            {
+                int rx = Random.Range(0, mCurrentGenerator.cols);
+                int ry = Random.Range(0, mCurrentGenerator.rows);
+
+                int sx = rx + mCurrentGenerator.START_X;
+                int sy = ry + mCurrentGenerator.START_Y;
+
+                GameObject gold = Instantiate(mGoldPrefab, new Vector3(sx, sy, 0.0f), Quaternion.identity);
+                mGolds.Add(gold);
+
+                yield return null;
+            }
+        }
+
+        #endregion
+
+        //// for all npcs, run towards the player.
+        //// every 5 seconds recalculate the path and go to the new
+        //// player location.
+        //IEnumerator Coroutine_NPC_PathFindToPlayer(float duration = 5.0f)
+        //{
+        //    for(int i = 0; i < mNPCs.Count; ++i)
+        //    {
+        //        Transform npc = mNPCs[i].transform;
+        //        // NPC location.
+        //        int nx = (int)npc.transform.position.x - mCurrentGenerator.START_X;
+        //        int ny = (int)npc.transform.position.y - mCurrentGenerator.START_Y;
+
+        //        // player position.
+        //        int dx = (int)mPlayerMovement.mPlayer.transform.position.x - mCurrentGenerator.START_X;
+        //        int dy = (int)mPlayerMovement.mPlayer.transform.position.y - mCurrentGenerator.START_Y;
+        //        //mpf.FindPath(cell, mCurrentGenerator.maze.GetCell(dx, dy));
+
+        //        mNPCs[i].FindPath(mCurrentGenerator.maze.GetCell(nx, ny), mCurrentGenerator.maze.GetCell(dx, dy));
+        //    }
+        //    yield return new WaitForSeconds(duration);
+        //}
+
         void OnEnterWin()
         {
+            // remove all the NPCs.
+            for (int i = 0; i < mNPCs.Count; ++i)
+            {
+                Destroy(mNPCs[i].gameObject);
+            }
+            mNPCs.Clear();
+            for (int i = 0; i < mGolds.Count; ++i)
+            {
+                Destroy(mGolds[i]);
+            }
+            mGolds.Clear();
             mMenuHandler.SetActiveBtnNext(true);
         }
 
         void OnEnterLose()
         {
+            Debug.Log("Lost");
+            // remove all the NPCs.
+            for(int i = 0; i < mNPCs.Count; ++i)
+            {
+                Destroy(mNPCs[i].gameObject);
+            }
+            mNPCs.Clear();
+            for (int i = 0; i < mGolds.Count; ++i)
+            {
+                Destroy(mGolds[i]);
+            }
+            mGolds.Clear();
             mMenuHandler.SetActiveBtnNext(true);
         }
         #endregion
+
+
     }
 }

@@ -48,6 +48,7 @@ namespace Maze
             StartCoroutine(Coroutine_FindPath(start, goal));
         }
 
+        #region PATH_FINDING
         private IEnumerator Coroutine_FindPath(Maze.Cell start, Maze.Cell goal)
         {
             Maze.Cell c = start;
@@ -102,7 +103,7 @@ namespace Maze
                         else
                         {
                             int G = cost + current.Cost;
-                            int H = goal.x - next.Item2.x + goal.y - next.Item2.y;
+                            int H = Mathf.Abs(goal.x - next.Item2.x) + Mathf.Abs(goal.y - next.Item2.y);
                             int F = G + H;
                             Node<Maze.Cell> n = new Node<Maze.Cell>(next.Item2, F, current);
 
@@ -115,6 +116,7 @@ namespace Maze
             }
             yield return StartCoroutine(MoveToGoal(astarSolution, mNpc));
         }
+        #endregion
 
         private bool player_moving = false;
         // coroutine to swap tiles smoothly

@@ -1749,6 +1749,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   mMenuHandler: {fileID: 1713114572}
   mNpcPrefab: {fileID: 1535345714824216754, guid: bbe297247b7ebb146a260d9b4ccbca80, type: 3}
+  mGoldPrefab: {fileID: 1535345714824216754, guid: 9ab402af05a08ac45a037f6b21127cc2, type: 3}
   mGeneratorPrefab: {fileID: 38174113352860855, guid: 823a5c40700d8ab42bb7bee880f78ae4, type: 3}
 --- !u!4 &1713114570
 Transform:
