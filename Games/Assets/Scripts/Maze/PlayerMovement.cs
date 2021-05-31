@@ -13,6 +13,10 @@ namespace Maze
 
         public FixedTouchField mTouchField;
         public FixedJoystick mJoystick;
+        public FixedJoystick mRotJoystick;
+        //public Transform mTurret;
+
+        private float mCurrentAngle = 0.0f;
 
         [HideInInspector]
         public Generator mGenerator;
@@ -76,14 +80,42 @@ namespace Maze
             {
                 objectToMove.transform.position = Vector3.Lerp(startingPos, end, (elapsedTime / seconds));
                 elapsedTime += Time.deltaTime;
+
                 yield return new WaitForEndOfFrame();
             }
             player_moving = false;
             objectToMove.transform.position = end;
         }
 
+        public void UpdateRotation()
+        {
+            float x = mRotJoystick.Horizontal * Time.deltaTime;
+            float y = mRotJoystick.Vertical * Time.deltaTime;
+
+            mCurrentAngle = Mathf.Rad2Deg * Mathf.Atan2(-x, y) + 90.0f;
+
+            //if (y > 0.0f)
+            //{
+            //    mCurrentAngle = 90.0f;
+            //}
+            //if (y < 0.0f)
+            //{
+            //    mCurrentAngle = -90.0f;
+            //}
+            //if (x > 0.0f)
+            //{
+            //    mCurrentAngle =0.0f;
+            //}
+            //if (x < 0.0f)
+            //{
+            //    mCurrentAngle = 180.0f;
+            //}
+
+        }
+
         public void Tick()
         {
+            UpdateRotation();
             float x = mPlayer.transform.position.x;
             float y = mPlayer.transform.position.y;
 
@@ -97,12 +129,17 @@ namespace Maze
 
             if (player_moving) return;
 
+            mPlayer.transform.rotation = Quaternion.Lerp(
+                mPlayer.transform.rotation, Quaternion.Euler(0.0f, 0.0f, mCurrentAngle),
+                Time.deltaTime * 10.0f);
+
             if (!cell.flag[0])
             {
                 if (j < mGenerator.rows - 1 && my > 0.0f/* && Mathf.Abs(my) > Mathf.Abs(mx)*/)
                 {
                     StartCoroutine(Coroutine_MoveOverSeconds(mPlayer, new Vector3(i + mGenerator.START_X,
                         j + mGenerator.START_Y + 1, 0.0f), 1.0f / mSpeed));
+                    mCurrentAngle = 90.0f;
                 }
             }
             if (!cell.flag[1])
@@ -112,6 +149,7 @@ namespace Maze
                 {
                     StartCoroutine(Coroutine_MoveOverSeconds(mPlayer, new Vector3(i + mGenerator.START_X + 1,
                         j + mGenerator.START_Y, 0.0f), 1.0f / mSpeed));
+                    mCurrentAngle = 0.0f;
                 }
             }
             if (!cell.flag[2])
@@ -128,6 +166,7 @@ namespace Maze
                             j + mGenerator.START_Y - 1,
                             0.0f),
                         1.0f / mSpeed));
+                    mCurrentAngle = -90.0f;
                 }
             }
             if (!cell.flag[3])
@@ -137,6 +176,7 @@ namespace Maze
                 {
                     StartCoroutine(Coroutine_MoveOverSeconds(mPlayer, new Vector3(i + mGenerator.START_X - 1,
                         j + mGenerator.START_Y, 0.0f), 1.0f / mSpeed));
+                    mCurrentAngle = 180.0f;
                 }
             }
 

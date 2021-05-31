@@ -10,6 +10,7 @@ namespace Maze
         public GameMenuHandler mMenuHandler;
         public GameObject mNpcPrefab;
         public GameObject mGoldPrefab;
+        public GameObject mExplosionPrefab;
 
         // The generator prefab that generates the Maze.
         public GameObject mGeneratorPrefab;
@@ -91,8 +92,6 @@ namespace Maze
 
             mFsm.SetCurrentState((int)GameState.StateID.GENERATING_MAZE);
 
-            StartCoroutine(Coroutine_Spawn_Gold());
-
         }
 
         void OnEnterGeneratingMaze()
@@ -104,17 +103,24 @@ namespace Maze
         {
             if(mCurrentGenerator.mMazeGenerated)
             {
+                StartCoroutine(Coroutine_Spawn_Gold());
                 mFsm.SetCurrentState((int)GameState.StateID.PLAYING);
             }
-
         }
         void OnEnterPlaying()
         {
+            mPlayerMovement.mPlayer.SetActive(true);
             StartCoroutine(Coroutine_Spawn_NPC());
         }
         void OnExitPlaying()
         {
             StopCoroutine(Coroutine_Spawn_NPC());
+        }
+
+        IEnumerator Coroutine_DestroyAfter(float duration, GameObject obj)
+        {
+            yield return new WaitForSeconds(duration);
+            Destroy(obj);
         }
 
         void OnUpdatePlaying()
@@ -132,6 +138,9 @@ namespace Maze
                     Mathf.Abs(mNPCs[i].transform.position.x - mPlayerMovement.mPlayer.transform.position.x) < 0.5f &&
                     Mathf.Abs(mNPCs[i].transform.position.y - mPlayerMovement.mPlayer.transform.position.y) < 0.5f)
                 {
+                    GameObject exp = Instantiate(mExplosionPrefab, mNPCs[i].transform.position, Quaternion.identity);
+                    exp.SetActive(true);
+                    StartCoroutine(Coroutine_DestroyAfter(1.0f, exp));
                     mFsm.SetCurrentState((int)GameState.StateID.LOSE);
                 }
             }
@@ -183,8 +192,8 @@ namespace Maze
                 //int sx = goal.x + mCurrentGenerator.START_X;
                 //int sy = goal.y + mCurrentGenerator.START_Y;
 
-                int rx = Random.Range(0, mCurrentGenerator.cols);
-                int ry = Random.Range(0, mCurrentGenerator.rows);
+                int rx = Random.Range(2, mCurrentGenerator.cols - 2);
+                int ry = Random.Range(2, mCurrentGenerator.rows - 2);
 
                 int sx = rx + mCurrentGenerator.START_X;
                 int sy = ry + mCurrentGenerator.START_Y;
@@ -210,8 +219,8 @@ namespace Maze
         {
             for(int i = 0; i < count; ++i)
             {
-                int rx = Random.Range(0, mCurrentGenerator.cols);
-                int ry = Random.Range(0, mCurrentGenerator.rows);
+                int rx = Random.Range(2, mCurrentGenerator.cols - 2);
+                int ry = Random.Range(2, mCurrentGenerator.rows - 2);
 
                 int sx = rx + mCurrentGenerator.START_X;
                 int sy = ry + mCurrentGenerator.START_Y;
@@ -224,28 +233,6 @@ namespace Maze
         }
 
         #endregion
-
-        //// for all npcs, run towards the player.
-        //// every 5 seconds recalculate the path and go to the new
-        //// player location.
-        //IEnumerator Coroutine_NPC_PathFindToPlayer(float duration = 5.0f)
-        //{
-        //    for(int i = 0; i < mNPCs.Count; ++i)
-        //    {
-        //        Transform npc = mNPCs[i].transform;
-        //        // NPC location.
-        //        int nx = (int)npc.transform.position.x - mCurrentGenerator.START_X;
-        //        int ny = (int)npc.transform.position.y - mCurrentGenerator.START_Y;
-
-        //        // player position.
-        //        int dx = (int)mPlayerMovement.mPlayer.transform.position.x - mCurrentGenerator.START_X;
-        //        int dy = (int)mPlayerMovement.mPlayer.transform.position.y - mCurrentGenerator.START_Y;
-        //        //mpf.FindPath(cell, mCurrentGenerator.maze.GetCell(dx, dy));
-
-        //        mNPCs[i].FindPath(mCurrentGenerator.maze.GetCell(nx, ny), mCurrentGenerator.maze.GetCell(dx, dy));
-        //    }
-        //    yield return new WaitForSeconds(duration);
-        //}
 
         void OnEnterWin()
         {
@@ -260,6 +247,7 @@ namespace Maze
                 Destroy(mGolds[i]);
             }
             mGolds.Clear();
+            mPlayerMovement.mPlayer.SetActive(false);
             mMenuHandler.SetActiveBtnNext(true);
         }
 
@@ -277,6 +265,7 @@ namespace Maze
                 Destroy(mGolds[i]);
             }
             mGolds.Clear();
+            mPlayerMovement.mPlayer.SetActive(false);
             mMenuHandler.SetActiveBtnNext(true);
         }
         #endregion
