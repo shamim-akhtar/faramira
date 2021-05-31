@@ -430,7 +430,7 @@ namespace Tetris
         }
 
 
-        void RemoveLine(int id)
+        IEnumerator RemoveLine(int id)
         {
             for (int i = 0; i < width; ++i)
             {
@@ -473,6 +473,7 @@ namespace Tetris
             //Debug.Log("mLinesRemoved: " + mLinesRemoved);
             UpdateScore();
             mLastLineRemovedTime = Time.time - mLastLineRemovedTime;
+            yield return null;
         }
 
         public int GetLinesToClearLevel(int level)
@@ -485,7 +486,7 @@ namespace Tetris
             int id = CheckIfNeedToClearLines();
             while (id != -1)
             {
-                RemoveLine(id);
+                yield return StartCoroutine(RemoveLine(id));
                 id = CheckIfNeedToClearLines();
                 //yield return new WaitForSeconds(1.0f);
                 yield return StartCoroutine(AmbientSound.Coroutine_PlayShot(mAudioSource, mClearLineAudioClip));

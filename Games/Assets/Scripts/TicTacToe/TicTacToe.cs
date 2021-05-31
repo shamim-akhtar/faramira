@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace GMAI
+namespace TicTacToe
 {
     public class CellIndex
     {
