@@ -43,6 +43,9 @@ namespace Maze
             FAILURE,
         }
 
+        public delegate void OnReachGoal(MazePathFinder pf);
+        public OnReachGoal onReachGoal;
+
         public void FindPath(Maze.Cell start, Maze.Cell goal)
         {
             StartCoroutine(Coroutine_FindPath(start, goal));
@@ -118,20 +121,16 @@ namespace Maze
         }
         #endregion
 
-        private bool player_moving = false;
-        // coroutine to swap tiles smoothly
         public IEnumerator Coroutine_MoveOverSeconds(GameObject objectToMove, Vector3 end, float seconds)
         {
             float elapsedTime = 0;
             Vector3 startingPos = objectToMove.transform.position;
-            player_moving = true;
             while (elapsedTime < seconds)
             {
                 objectToMove.transform.position = Vector3.Lerp(startingPos, end, (elapsedTime / seconds));
                 elapsedTime += Time.deltaTime;
                 yield return new WaitForEndOfFrame();
             }
-            player_moving = false;
             objectToMove.transform.position = end;
         }
 
@@ -146,6 +145,7 @@ namespace Maze
                         0.0f),
                     1.0f / mSpeed));
             }
+            onReachGoal?.Invoke(this);
         }
     }
 }

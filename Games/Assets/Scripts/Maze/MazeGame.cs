@@ -126,11 +126,11 @@ namespace Maze
         void OnEnterPlaying()
         {
             mPlayerMovement.mPlayer.SetActive(true);
-            //StartCoroutine(Coroutine_Spawn_NPC());
+            StartCoroutine(Coroutine_Spawn_NPC());
         }
         void OnExitPlaying()
         {
-            //StopCoroutine(Coroutine_Spawn_NPC());
+            StopCoroutine(Coroutine_Spawn_NPC());
         }
 
         IEnumerator Coroutine_DestroyAfter(float duration, GameObject obj)
@@ -214,11 +214,6 @@ namespace Maze
         {
             mPlayerMovement.Tick();
 
-            // TEST
-            // handle input to create NPC.
-            //HandleMouseClick();
-
-            // check for collision with NPCs
             CheckForNPC_Player_Collision();
             CheckForGold_Player_Collision();
             CheckForAmmo_Player_Collision();
@@ -297,17 +292,31 @@ namespace Maze
                 MazePathFinder mpf = npc.AddComponent<MazePathFinder>();
                 mpf.mGenerator = mCurrentGenerator;
                 mpf.mNpc = npc;
-                mpf.mSpeed = 1.0f;
+                mpf.mSpeed = 0.5f;
 
                 // player position.
                 int dx = (int)mPlayerMovement.mPlayer.transform.position.x - mCurrentGenerator.START_X;
                 int dy = (int)mPlayerMovement.mPlayer.transform.position.y - mCurrentGenerator.START_Y;
                 mpf.FindPath(startCell, mCurrentGenerator.maze.GetCell(dx, dy));
+                mpf.onReachGoal += NPCOnReachGoal;
 
                 mNPCs.Add(mpf);
                 yield return new WaitForSeconds(duration);
             }
         }
+
+        IEnumerator Coroutine_NPCOnReachGoal(MazePathFinder pf)
+        {
+            yield return StartCoroutine(mPSManager.Coroutine_ShowEFX(14, pf.gameObject.transform.position, 0.2f));
+            mNPCs.Remove(pf);
+            Destroy(pf.gameObject);
+        }
+
+        void NPCOnReachGoal(MazePathFinder pf)
+        {
+            StartCoroutine(Coroutine_NPCOnReachGoal(pf));
+        }
+
         IEnumerator Coroutine_Spawn_Gold(int count = 5)
         {
             int i = 0;
