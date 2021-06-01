@@ -16,8 +16,6 @@ namespace Maze
         //public FixedJoystick mRotJoystick;
         //public Transform mTurret;
 
-        private float mCurrentAngle = 0.0f;
-
         [HideInInspector]
         public Generator mGenerator;
 
