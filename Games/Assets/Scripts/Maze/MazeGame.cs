@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 using Patterns;
 
 namespace Maze
@@ -11,9 +12,12 @@ namespace Maze
         public GameObject mNpcPrefab;
         public GameObject mGoldPrefab;
         public GameObject mExplosionPrefab;
+        public GameObject mAmmoPrefab;
 
         // The generator prefab that generates the Maze.
         public GameObject mGeneratorPrefab;
+
+        public Effects.csShowAllEffect mPSManager;
 
         [HideInInspector]
         public FiniteStateMachine mFsm = new FiniteStateMachine();
@@ -23,6 +27,16 @@ namespace Maze
 
         List<MazePathFinder> mNPCs = new List<MazePathFinder>();
         List<GameObject> mGolds = new List<GameObject>();
+        List<GameObject> mAmmos = new List<GameObject>();
+
+        #region SCORE
+        int mGoldScore = 0;
+        int mAmmoScore = 0;
+        public Text mGoldScoreText;
+        public Text mAmmoScoreText;
+        #endregion
+
+        public FixedButton mFireButton;
 
         void Start()
         {
@@ -65,6 +79,7 @@ namespace Maze
         void Update()
         {
             mFsm.Update();
+            UpdateScoreDisplay();
         }
 
         void OnReachDestination()
@@ -103,24 +118,96 @@ namespace Maze
         {
             if(mCurrentGenerator.mMazeGenerated)
             {
-                StartCoroutine(Coroutine_Spawn_Gold());
+                StartCoroutine(Coroutine_Spawn_Gold(10));
+                StartCoroutine(Coroutine_Spawn_Ammo(5));
                 mFsm.SetCurrentState((int)GameState.StateID.PLAYING);
             }
         }
         void OnEnterPlaying()
         {
             mPlayerMovement.mPlayer.SetActive(true);
-            StartCoroutine(Coroutine_Spawn_NPC());
+            //StartCoroutine(Coroutine_Spawn_NPC());
         }
         void OnExitPlaying()
         {
-            StopCoroutine(Coroutine_Spawn_NPC());
+            //StopCoroutine(Coroutine_Spawn_NPC());
         }
 
         IEnumerator Coroutine_DestroyAfter(float duration, GameObject obj)
         {
             yield return new WaitForSeconds(duration);
             Destroy(obj);
+        }
+
+        void CheckForNPC_Player_Collision()
+        {
+            for (int i = 0; i < mNPCs.Count; ++i)
+            {
+                if (
+                Mathf.Abs(mNPCs[i].transform.position.x - mPlayerMovement.mPlayer.transform.position.x) < 0.5f &&
+                Mathf.Abs(mNPCs[i].transform.position.y - mPlayerMovement.mPlayer.transform.position.y) < 0.5f)
+                {
+                    //GameObject exp = Instantiate(mExplosionPrefab, mNPCs[i].transform.position, Quaternion.identity);
+                    //exp.SetActive(true);
+                    //StartCoroutine(Coroutine_DestroyAfter(1.0f, exp));
+
+                    mPSManager.ShowEFX(14, mGolds[i].transform.position);
+                    mFsm.SetCurrentState((int)GameState.StateID.LOSE);
+                }
+            }
+        }
+        void UpdateScoreDisplay()
+        {
+            mGoldScoreText.text = mGoldScore.ToString();
+            mAmmoScoreText.text = mAmmoScore.ToString();
+        }
+
+        void CheckForGold_Player_Collision()
+        {
+            List<GameObject> toRemove = new List<GameObject>();
+            for (int i = 0; i < mGolds.Count; ++i)
+            {
+                if (
+                Mathf.Abs(mGolds[i].transform.position.x - mPlayerMovement.mPlayer.transform.position.x) < 0.5f &&
+                Mathf.Abs(mGolds[i].transform.position.y - mPlayerMovement.mPlayer.transform.position.y) < 0.5f)
+                {
+                    mPSManager.ShowEFX(17, mGolds[i].transform.position);
+                    toRemove.Add(mGolds[i]);
+
+                    mGoldScore += 10;
+                }
+            }
+
+            for(int i = 0; i < toRemove.Count; ++i)
+            {
+                Destroy(toRemove[i]);
+                mGolds.Remove(toRemove[i]);
+            }
+            toRemove.Clear();
+        }
+
+        void CheckForAmmo_Player_Collision()
+        {
+            List<GameObject> toRemove = new List<GameObject>();
+            for (int i = 0; i < mAmmos.Count; ++i)
+            {
+                if (
+                Mathf.Abs(mAmmos[i].transform.position.x - mPlayerMovement.mPlayer.transform.position.x) < 0.5f &&
+                Mathf.Abs(mAmmos[i].transform.position.y - mPlayerMovement.mPlayer.transform.position.y) < 0.5f)
+                {
+                    mPSManager.ShowEFX(18, mAmmos[i].transform.position);
+                    toRemove.Add(mAmmos[i]);
+
+                    mAmmoScore += 20;
+                }
+            }
+
+            for (int i = 0; i < toRemove.Count; ++i)
+            {
+                Destroy(toRemove[i]);
+                mAmmos.Remove(toRemove[i]);
+            }
+            toRemove.Clear();
         }
 
         void OnUpdatePlaying()
@@ -132,20 +219,25 @@ namespace Maze
             //HandleMouseClick();
 
             // check for collision with NPCs
-            for(int i = 0; i < mNPCs.Count; ++i)
+            CheckForNPC_Player_Collision();
+            CheckForGold_Player_Collision();
+            CheckForAmmo_Player_Collision();
+
+            if(mFireButton.Pressed)
             {
-                if(
-                    Mathf.Abs(mNPCs[i].transform.position.x - mPlayerMovement.mPlayer.transform.position.x) < 0.5f &&
-                    Mathf.Abs(mNPCs[i].transform.position.y - mPlayerMovement.mPlayer.transform.position.y) < 0.5f)
-                {
-                    GameObject exp = Instantiate(mExplosionPrefab, mNPCs[i].transform.position, Quaternion.identity);
-                    exp.SetActive(true);
-                    StartCoroutine(Coroutine_DestroyAfter(1.0f, exp));
-                    mFsm.SetCurrentState((int)GameState.StateID.LOSE);
-                }
+                //StartCoroutine(Coroutine_Fire());
             }
         }
 
+        bool isFiring = false;
+        IEnumerator Coroutine_Fire()
+        {
+            isFiring = true;
+            yield return StartCoroutine(mPSManager.Coroutine_ShowEFX(29, mPlayerMovement.mPlayer.transform.position, 0.2f));
+            isFiring = false;
+        }
+
+        #region HANDLE CLICKS TEST
         void HandleMouseClick()
         {
             if (mMenuHandler.mShowingExitPopup)
@@ -181,6 +273,7 @@ namespace Maze
 
             }
         }
+        #endregion
 
         #region SPAWN_ENEMIES
         IEnumerator Coroutine_Spawn_NPC(float duration = 10.0f)
@@ -217,26 +310,55 @@ namespace Maze
         }
         IEnumerator Coroutine_Spawn_Gold(int count = 5)
         {
-            for(int i = 0; i < count; ++i)
+            int i = 0;
+            while (i < count)
             {
                 int rx = Random.Range(2, mCurrentGenerator.cols - 2);
                 int ry = Random.Range(2, mCurrentGenerator.rows - 2);
 
-                int sx = rx + mCurrentGenerator.START_X;
-                int sy = ry + mCurrentGenerator.START_Y;
+                Maze.Cell cell = mCurrentGenerator.maze.GetCell(rx, ry);
+                while (!cell.containsGold && !cell.containsAmmo)
+                {
+                    int sx = rx + mCurrentGenerator.START_X;
+                    int sy = ry + mCurrentGenerator.START_Y;
 
-                GameObject gold = Instantiate(mGoldPrefab, new Vector3(sx, sy, 0.0f), Quaternion.identity);
-                mGolds.Add(gold);
+                    GameObject gold = Instantiate(mGoldPrefab, new Vector3(sx, sy, 0.0f), Quaternion.identity);
+                    mGolds.Add(gold);
 
-                yield return null;
+                    mCurrentGenerator.maze.GetCell(rx, ry).containsGold = true;
+                    i++;
+                    yield return null;
+                }
+            }
+        }
+        IEnumerator Coroutine_Spawn_Ammo(int count = 5)
+        {
+            int i = 0;
+            while(i < count)
+            {
+                int rx = Random.Range(2, mCurrentGenerator.cols - 2);
+                int ry = Random.Range(2, mCurrentGenerator.rows - 2);
+
+                Maze.Cell cell = mCurrentGenerator.maze.GetCell(rx, ry);
+                while (!cell.containsGold && !cell.containsAmmo)
+                {
+                    int sx = rx + mCurrentGenerator.START_X;
+                    int sy = ry + mCurrentGenerator.START_Y;
+
+                    GameObject ammo = Instantiate(mAmmoPrefab, new Vector3(sx, sy, 0.0f), Quaternion.identity);
+                    mAmmos.Add(ammo);
+
+                    mCurrentGenerator.maze.GetCell(rx, ry).containsAmmo = true;
+                    i++;
+                    yield return null;
+                }
             }
         }
 
         #endregion
 
-        void OnEnterWin()
+        void DestroyAllObjects()
         {
-            // remove all the NPCs.
             for (int i = 0; i < mNPCs.Count; ++i)
             {
                 Destroy(mNPCs[i].gameObject);
@@ -247,29 +369,38 @@ namespace Maze
                 Destroy(mGolds[i]);
             }
             mGolds.Clear();
+            for (int i = 0; i < mAmmos.Count; ++i)
+            {
+                Destroy(mAmmos[i]);
+            }
+            mAmmos.Clear();
             mPlayerMovement.mPlayer.SetActive(false);
+        }
+
+        IEnumerator Coroutine_OnEnterWin()
+        {
+            yield return StartCoroutine(mPSManager.Coroutine_ShowEFX(4, Vector3.zero, 1.0f));
+            DestroyAllObjects();
             mMenuHandler.SetActiveBtnNext(true);
+        }
+
+        void OnEnterWin()
+        {
+            StartCoroutine(Coroutine_OnEnterWin());
         }
 
         void OnEnterLose()
         {
-            Debug.Log("Lost");
-            // remove all the NPCs.
-            for(int i = 0; i < mNPCs.Count; ++i)
-            {
-                Destroy(mNPCs[i].gameObject);
-            }
-            mNPCs.Clear();
-            for (int i = 0; i < mGolds.Count; ++i)
-            {
-                Destroy(mGolds[i]);
-            }
-            mGolds.Clear();
-            mPlayerMovement.mPlayer.SetActive(false);
+            DestroyAllObjects();
             mMenuHandler.SetActiveBtnNext(true);
         }
         #endregion
 
+        #region SHOW_GOLD_COLLECTION_EFFECT
 
+        void OnEnterShowGoldCollectionEffect()
+        {
+        }
+        #endregion
     }
 }

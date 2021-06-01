@@ -38,6 +38,8 @@ namespace Maze
                 flag[(int)dir] = f;
                 OnSetDirFlag?.Invoke(x, y, dir, f);
             }
+            public bool containsGold = false;
+            public bool containsAmmo = false;
         }
 
         private int _rows;

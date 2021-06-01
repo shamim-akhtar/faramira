@@ -14,6 +14,7 @@ namespace Maze
             PLAYING,
             WIN,
             LOSE,
+            SHOW_GOLD_COLLECTION_EFFECT,
         };
         //protected BoardMemory mBoard;
         //protected FiniteStateMachine mFsm;
