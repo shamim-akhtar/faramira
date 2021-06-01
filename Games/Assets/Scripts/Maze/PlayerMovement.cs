@@ -13,7 +13,7 @@ namespace Maze
 
         public FixedTouchField mTouchField;
         public FixedJoystick mJoystick;
-        public FixedJoystick mRotJoystick;
+        //public FixedJoystick mRotJoystick;
         //public Transform mTurret;
 
         private float mCurrentAngle = 0.0f;
@@ -38,7 +38,7 @@ namespace Maze
 
         Rigidbody2D rb;
         float mx, my;
-        //float jx, jy;
+
         public float mSpeed = 20.0f;
 
         // Start is called before the first frame update
@@ -47,21 +47,13 @@ namespace Maze
             rb = mPlayer.GetComponent<Rigidbody2D>();
             mx = 0.0f;
             my = 0.0f;
-            //jx = 0.0f;
-            //jy = 0.0f;
-
         }
 
         // Update is called once per frame
         void Update()
         {
-            //mx = mTouchField.TouchDist.x * Time.deltaTime;
-            //my = mTouchField.TouchDist.y * Time.deltaTime;
             mx = mJoystick.Horizontal * Time.deltaTime;
             my = mJoystick.Vertical * Time.deltaTime;
-
-            //mx = mJoystick.Direction.x;
-            //my = mJoystick.Direction.y;
 
             if (Input.GetKeyDown(KeyCode.Space))
             {
@@ -87,30 +79,49 @@ namespace Maze
             objectToMove.transform.position = end;
         }
 
+        bool mPlayerRotating = false;
+        IEnumerator LerpFunction(Transform tform, Quaternion endValue, float duration)
+        {
+            mPlayerRotating = true;
+            float time = 0;
+            Quaternion startValue = tform.rotation;
+
+            while (time < duration)
+            {
+                tform.rotation = Quaternion.Lerp(startValue, endValue, time / duration);
+                time += Time.deltaTime;
+                yield return null;
+            }
+            tform.rotation = endValue;
+            mPlayerRotating = false;
+        }
+
         public void UpdateRotation()
         {
-            float x = mRotJoystick.Horizontal * Time.deltaTime;
-            float y = mRotJoystick.Vertical * Time.deltaTime;
+            float x = mTouchField.TouchDist.x;
+            //float y = mTouchField.TouchDist.y * Time.deltaTime;
 
-            mCurrentAngle = Mathf.Rad2Deg * Mathf.Atan2(-x, y) + 90.0f;
+            //mCurrentAngle = Mathf.Rad2Deg * Mathf.Atan2(-x, y) + 90.0f;
+            //mCurrentAngle -= x;
 
-            //if (y > 0.0f)
-            //{
-            //    mCurrentAngle = 90.0f;
-            //}
-            //if (y < 0.0f)
-            //{
-            //    mCurrentAngle = -90.0f;
-            //}
-            //if (x > 0.0f)
-            //{
-            //    mCurrentAngle =0.0f;
-            //}
-            //if (x < 0.0f)
-            //{
-            //    mCurrentAngle = 180.0f;
-            //}
-
+            if(x > 0.0f)
+            {
+                if (!mPlayerRotating)
+                {
+                    var rotation = mPlayer.transform.rotation;
+                    rotation *= Quaternion.Euler(0.0f, 0.0f, -90.0f);
+                    StartCoroutine(LerpFunction(mPlayer.transform, rotation, 0.2f));
+                }
+            }
+            else if (x < 0.0f)
+            {
+                if (!mPlayerRotating)
+                {
+                    var rotation = mPlayer.transform.rotation;
+                    rotation *= Quaternion.Euler(0.0f, 0.0f, 90.0f);
+                    StartCoroutine(LerpFunction(mPlayer.transform, rotation, 0.2f));
+                }
+            }
         }
 
         public void Tick()
@@ -129,17 +140,20 @@ namespace Maze
 
             if (player_moving) return;
 
-            mPlayer.transform.rotation = Quaternion.Lerp(
-                mPlayer.transform.rotation, Quaternion.Euler(0.0f, 0.0f, mCurrentAngle),
-                Time.deltaTime * 10.0f);
+            //mPlayer.transform.rotation = Quaternion.Lerp(
+            //    mPlayer.transform.rotation, Quaternion.Euler(0.0f, 0.0f, mCurrentAngle),
+            //    Time.deltaTime * 10.0f);
 
             if (!cell.flag[0])
             {
                 if (j < mGenerator.rows - 1 && my > 0.0f/* && Mathf.Abs(my) > Mathf.Abs(mx)*/)
                 {
-                    StartCoroutine(Coroutine_MoveOverSeconds(mPlayer, new Vector3(i + mGenerator.START_X,
-                        j + mGenerator.START_Y + 1, 0.0f), 1.0f / mSpeed));
-                    mCurrentAngle = 90.0f;
+                    StartCoroutine(Coroutine_MoveOverSeconds(mPlayer, 
+                        new Vector3(
+                            i + mGenerator.START_X,
+                            j + mGenerator.START_Y + 
+                            1, 0.0f), 
+                        1.0f / mSpeed));
                 }
             }
             if (!cell.flag[1])
@@ -147,9 +161,12 @@ namespace Maze
                 // can go right.
                 if (i < mGenerator.cols - 1 && mx > 0.0f/* && Mathf.Abs(mx) > Mathf.Abs(my)*/)
                 {
-                    StartCoroutine(Coroutine_MoveOverSeconds(mPlayer, new Vector3(i + mGenerator.START_X + 1,
-                        j + mGenerator.START_Y, 0.0f), 1.0f / mSpeed));
-                    mCurrentAngle = 0.0f;
+                    StartCoroutine(Coroutine_MoveOverSeconds(mPlayer, 
+                        new Vector3(
+                            i + mGenerator.START_X + 1,
+                            j + mGenerator.START_Y, 
+                            0.0f), 
+                        1.0f / mSpeed));
                 }
             }
             if (!cell.flag[2])
@@ -159,14 +176,12 @@ namespace Maze
                     Vector3 a = mPlayer.transform.position;
                     Vector3 b = new Vector3(i + mGenerator.START_X, j + mGenerator.START_Y - 1, 0.0f);
 
-                    //Debug.Log(a + ", " + b);
                     StartCoroutine(Coroutine_MoveOverSeconds(mPlayer,
                         new Vector3(
                             i + mGenerator.START_X,
                             j + mGenerator.START_Y - 1,
                             0.0f),
                         1.0f / mSpeed));
-                    mCurrentAngle = -90.0f;
                 }
             }
             if (!cell.flag[3])
@@ -174,9 +189,12 @@ namespace Maze
                 // can go left.
                 if (i > 0 && mx < 0.0f/* && Mathf.Abs(mx) > Mathf.Abs(my)*/)
                 {
-                    StartCoroutine(Coroutine_MoveOverSeconds(mPlayer, new Vector3(i + mGenerator.START_X - 1,
-                        j + mGenerator.START_Y, 0.0f), 1.0f / mSpeed));
-                    mCurrentAngle = 180.0f;
+                    StartCoroutine(Coroutine_MoveOverSeconds(mPlayer, 
+                        new Vector3(
+                            i + mGenerator.START_X - 1,
+                            j + mGenerator.START_Y, 
+                            0.0f), 
+                        1.0f / mSpeed));
                 }
             }
 
