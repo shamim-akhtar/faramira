@@ -12,8 +12,14 @@ namespace Breakout
 
         private Vector2 mVelocity = new Vector2(0.0f, 0.0f);
         private float mx = 0.0f;
+        private float width = 0.0f;
+
+        public Ball mBall;
+
         void Start()
         {
+            BoxCollider2D col = GetComponent<BoxCollider2D>();
+            width = 2.0f * col.bounds.extents.x;
         }
 
         private void Update()
@@ -35,6 +41,14 @@ namespace Breakout
         private void OnCollisionEnter2D(Collision2D collision)
         {
             //collision.gameObject.GetComponent<Rigidbody2D>();
+            ContactPoint2D cp = collision.GetContact(0);
+            float diff = 5.0f * (cp.point.x - transform.position.x) / width;
+            //Debug.Log("Diff: " + diff);
+
+            if(collision.gameObject.tag == "Ball")
+            {
+                mBall.AddForceToBall(new Vector2(diff, 0.0f), ForceMode2D.Impulse);
+            }
         }
     }
 }

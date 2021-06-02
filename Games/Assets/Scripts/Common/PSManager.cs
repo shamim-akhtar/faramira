@@ -19,19 +19,5 @@ public class PSManager : MonoBehaviour
         mEfx.ShowEFX(i, position, duration);
     }
 
-    public GameObject GetCurrentPS()
-    {
-        return mEfx.mCurrentPS;
-    }
-
-    public void DestroyCurrentPS()
-    {
-        if(mEfx.mCurrentPS != null)
-        {
-            Destroy(mEfx.mCurrentPS);
-            mEfx.mCurrentPS = null;
-        }
-    }
-
     public int MaxID {  get { return mEfx.Effect.Length; } }
 }

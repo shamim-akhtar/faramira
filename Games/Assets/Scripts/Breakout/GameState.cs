@@ -11,6 +11,7 @@ namespace Breakout
         {
             NEW_GAME,
             GENERATING,
+            PUSHBALL,
             PLAYING,
             WIN,
             LOSE,
