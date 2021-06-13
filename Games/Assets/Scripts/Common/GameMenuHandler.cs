@@ -15,13 +15,23 @@ public class GameMenuHandler : MonoBehaviour
     public bool mShowingExitPopup = false;
     public bool mOpaqueBackground = false;
 
+    public bool mShowButton1_OnStart = true;
+    public bool mShowButton2_OnStart = false;
+    public bool mShowButton3_OnStart = false;
+    public bool mShowButton4_OnStart = false;
+    public bool mShowButton5_OnStart = false;
+    //public bool mShowHomeOnStart = true;
+
     void Start()
     {
         mConfirmExit.onClickYes = LoadMenu;
         mConfirmExit.onClickNo = DisableExitMenu;
 
-        mBottomMenu.btnPrev.gameObject.SetActive(true);
-        mBottomMenu.btnNext.gameObject.SetActive(false);
+        mBottomMenu.btnPrev.gameObject.SetActive(mShowButton1_OnStart);
+        mBottomMenu.btnTrophy.gameObject.SetActive(mShowButton2_OnStart);
+        mBottomMenu.btnSound.gameObject.SetActive(mShowButton3_OnStart);
+        mBottomMenu.btnLeader.gameObject.SetActive(mShowButton4_OnStart);
+        mBottomMenu.btnNext.gameObject.SetActive(mShowButton5_OnStart);
     }
 
     // Update is called once per frame
@@ -68,5 +78,15 @@ public class GameMenuHandler : MonoBehaviour
     public void SetActiveBtnHome(bool flag)
     {
         mBottomMenu.btnPrev.gameObject.SetActive(flag);
+    }
+
+    public void SetActiveBtnPrev(bool flag)
+    {
+        mBottomMenu.btnSound.gameObject.SetActive(flag);
+    }
+
+    public void SetActiveBtnPlay(bool flag)
+    {
+        mBottomMenu.btnTrophy.gameObject.SetActive(flag);
     }
 }

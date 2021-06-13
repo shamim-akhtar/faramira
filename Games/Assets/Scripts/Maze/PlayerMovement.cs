@@ -16,8 +16,6 @@ namespace Maze
         //public FixedJoystick mRotJoystick;
         //public Transform mTurret;
 
-        private float mCurrentAngle = 0.0f;
-
         [HideInInspector]
         public Generator mGenerator;
 
@@ -44,6 +42,7 @@ namespace Maze
         // Start is called before the first frame update
         void Start()
         {
+            Physics2D.gravity = Vector2.zero;
             rb = mPlayer.GetComponent<Rigidbody2D>();
             mx = 0.0f;
             my = 0.0f;

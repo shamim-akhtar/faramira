@@ -75,6 +75,8 @@ namespace Maze
                     mStatus = StatusType.FAILURE;
                     break;
                 }
+                // sort the openlist and get the node with the least cost.
+                // in our case the PriorityQueue data structure does the work for us.
                 Node<Maze.Cell> current = openlist.GetAndRemoveTop();
 
 

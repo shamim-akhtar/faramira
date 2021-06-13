@@ -16,10 +16,10 @@ public class BottomMenu : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        btnTrophy.gameObject.SetActive(false);
-        btnSound.gameObject.SetActive(false);
-        btnLeader.gameObject.SetActive(false);
-        sliderVolume.gameObject.SetActive(false);
+        //btnTrophy.gameObject.SetActive(false);
+        //btnSound.gameObject.SetActive(false);
+        //btnLeader.gameObject.SetActive(false);
+        //sliderVolume.gameObject.SetActive(false);
 
         btnSound.onClick.AddListener(OnClick_Sound);
     }
