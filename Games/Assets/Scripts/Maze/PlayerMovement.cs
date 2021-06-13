@@ -42,6 +42,7 @@ namespace Maze
         // Start is called before the first frame update
         void Start()
         {
+            Physics2D.gravity = Vector2.zero;
             rb = mPlayer.GetComponent<Rigidbody2D>();
             mx = 0.0f;
             my = 0.0f;

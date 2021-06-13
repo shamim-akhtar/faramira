@@ -26,7 +26,7 @@ namespace Breakout
         {
             // random positive y and -1 to +1 x.
             float x = 0.0f; // Random.Range(-1.0f, 1.0f) * 10.0f;
-            float y = 12.0f;
+            float y = 15.0f;
             mRb2D.AddForce(new Vector2(x, y), ForceMode2D.Impulse);
 
             mGame.SetState(GameState.StateID.PLAYING);
