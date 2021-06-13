@@ -1,3 +1,3 @@
-# faramira
+# Faramira Games
 
-Test
+![Games](https://github.com/shamim-akhtar/faramira/blob/main/screenshot1.jpg)
