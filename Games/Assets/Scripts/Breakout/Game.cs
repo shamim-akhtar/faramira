@@ -180,11 +180,14 @@ namespace Breakout
             mBat.GetComponent<Rigidbody2D>().velocity = Vector3.zero;
             mBat.transform.position = mBatResetPos;
             mBall.transform.position = mBallResetPos;
+            mBat.GetComponent<BatMovement>().offset = Vector3.zero;
+            mBat.GetComponent<BatMovement>().playing = false;
             yield return new WaitForSeconds(0.5f);
         }
         void OnEnterPlaying()
         {
             ShowPushButton(false);
+            mBat.GetComponent<BatMovement>().playing = true;
             mMenuHandler.SetActiveBtnNext(false);
         }
 
@@ -193,16 +196,19 @@ namespace Breakout
             //yield return StartCoroutine(Coroutine_DestroyAllBricks());
             yield return StartCoroutine(Coroutine_ResetBall());
             mMenuHandler.SetActiveBtnNext(true);
+            mBat.GetComponent<BatMovement>().playing = false;
         }
 
         void OnEnterWin()
         {
             StartCoroutine(Coroutine_CleanBoard());
+            mBat.GetComponent<BatMovement>().playing = false;
         }
 
         void OnEnterLose()
         {
             StartCoroutine(Coroutine_CleanBoard());
+            mBat.GetComponent<BatMovement>().playing = false;
         }
         #endregion
 

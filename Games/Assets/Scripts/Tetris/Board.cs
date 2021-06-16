@@ -46,8 +46,8 @@ namespace Tetris
         public Button mBtnPlay;
 
         private bool mDownKeyPressed = false;
-        private bool mLeftKeyPressed = false;
-        private bool mRightKeyPressed = false;
+        //private bool mLeftKeyPressed = false;
+        //private bool mRightKeyPressed = false;
         public FixedButton mBtnDown;
 
         public void InstantiateBlock(int id)

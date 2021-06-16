@@ -21,7 +21,7 @@ public class PSViewer : MonoBehaviour
         id++;
         if (id == mPSManager.MaxID) id = 0;
         //mPSManager.DestroyCurrentPS();
-        mPSManager.ShowEFX(id, Vector3.zero, 1.0f);
+        mPSManager.ShowEFX(id, Vector3.zero, 5.0f);
     }
 
     public void PrevEffect()
@@ -30,12 +30,12 @@ public class PSViewer : MonoBehaviour
 
         if (id == 0) id = mPSManager.MaxID;
         id -= 1;
-        mPSManager.ShowEFX(id, Vector3.zero, 1.0f);
+        mPSManager.ShowEFX(id, Vector3.zero, 5.0f);
     }
 
     public void PlayEffect()
     {
         //mPSManager.DestroyCurrentPS();
-        mPSManager.ShowEFX(id, Vector3.zero, 1.0f);
+        mPSManager.ShowEFX(id, Vector3.zero, 5.0f);
     }
 }

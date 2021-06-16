@@ -1,4 +1,5 @@
 using System.Collections;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
@@ -35,6 +36,8 @@ namespace Maze
         public Text mGoldScoreText;
         public Text mAmmoScoreText;
         #endregion
+
+        public Button mShootButton;
 
         public FixedButton mFireButton;
 
@@ -127,10 +130,15 @@ namespace Maze
         {
             mPlayerMovement.mPlayer.SetActive(true);
             StartCoroutine(Coroutine_Spawn_NPC());
+            if(mAmmoScore > 0)
+            {
+                mShootButton.gameObject.SetActive(true);
+            }
         }
         void OnExitPlaying()
         {
             StopCoroutine(Coroutine_Spawn_NPC());
+            mShootButton.gameObject.SetActive(false);
         }
 
         IEnumerator Coroutine_DestroyAfter(float duration, GameObject obj)
@@ -212,6 +220,10 @@ namespace Maze
 
         void OnUpdatePlaying()
         {
+            if (mAmmoScore > 0)
+            {
+                mShootButton.gameObject.SetActive(true);
+            }
             mPlayerMovement.Tick();
 
             CheckForNPC_Player_Collision();
@@ -224,12 +236,9 @@ namespace Maze
             }
         }
 
-        bool isFiring = false;
         IEnumerator Coroutine_Fire()
         {
-            isFiring = true;
             yield return StartCoroutine(mPSManager.Coroutine_ShowEFX(29, mPlayerMovement.mPlayer.transform.position, 0.2f));
-            isFiring = false;
         }
 
         #region HANDLE CLICKS TEST
@@ -411,5 +420,10 @@ namespace Maze
         {
         }
         #endregion
+
+        public void Shoot()
+        {
+            Debug.Log("TODO: Shoot");
+        }
     }
 }

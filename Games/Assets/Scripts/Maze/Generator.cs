@@ -30,7 +30,7 @@ namespace Maze
         // Start is called before the first frame update
         void Start()
         {
-            UnityEngine.Random.InitState(100);
+            //UnityEngine.Random.InitState(100);
 
             START_Y = -rows / 2;
             START_X = -cols / 2;
