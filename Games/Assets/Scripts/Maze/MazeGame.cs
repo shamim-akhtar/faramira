@@ -228,8 +228,8 @@ namespace Maze
 
         void CheckForShootItem_NPC_Collision()
         {
-            List<MazePathFinder> toRemove1 = new List<MazePathFinder>();
-            List<MazePathFinder> toRemove2 = new List<MazePathFinder>();
+            List<MazePathFinder> toRemoveNPC = new List<MazePathFinder>();
+            List<MazePathFinder> toRemoveShootItems = new List<MazePathFinder>();
             for (int i = 0; i < mShootItems.Count; ++i)
             {
                 for (int j = 0; j < mNPCs.Count; ++j)
@@ -239,25 +239,25 @@ namespace Maze
                     Mathf.Abs(mShootItems[i].transform.position.y - mNPCs[j].transform.position.y) < 0.5f)
                     {
                         mPSManager.ShowEFX(32, mShootItems[i].transform.position);
-                        toRemove1.Add(mShootItems[i]);
-                        toRemove2.Add(mNPCs[j]);
+                        //toRemoveShootItems.Add(mShootItems[i]);
+                        toRemoveNPC.Add(mNPCs[j]);
                     }
                 }
             }
 
-            for (int i = 0; i < toRemove1.Count; ++i)
-            {
-                mShootItems.Remove(toRemove1[i]);
-                Destroy(toRemove1[i].gameObject);
-            }
-            toRemove1.Clear();
+            //for (int i = 0; i < toRemoveShootItems.Count; ++i)
+            //{
+            //    mShootItems.Remove(toRemoveShootItems[i]);
+            //    Destroy(toRemoveShootItems[i].gameObject);
+            //}
+            toRemoveShootItems.Clear();
 
-            for (int i = 0; i < toRemove2.Count; ++i)
+            for (int i = 0; i < toRemoveNPC.Count; ++i)
             {
-                mNPCs.Remove(toRemove2[i]);
-                Destroy(toRemove2[i].gameObject);
+                mNPCs.Remove(toRemoveNPC[i]);
+                Destroy(toRemoveNPC[i].gameObject);
             }
-            toRemove2.Clear();
+            toRemoveNPC.Clear();
         }
 
         void OnUpdatePlaying()
