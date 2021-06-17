@@ -14,9 +14,11 @@ namespace Maze
         public GameObject mGoldPrefab;
         public GameObject mExplosionPrefab;
         public GameObject mAmmoPrefab;
+        public GameObject mShootItemPrefab;
 
         // The generator prefab that generates the Maze.
         public GameObject mGeneratorPrefab;
+        public Transform mShootEffectPrefab;
 
         public Effects.csShowAllEffect mPSManager;
 
@@ -26,6 +28,7 @@ namespace Maze
         private Generator mCurrentGenerator;
         private PlayerMovement mPlayerMovement;
 
+        List<MazePathFinder> mShootItems = new List<MazePathFinder>();
         List<MazePathFinder> mNPCs = new List<MazePathFinder>();
         List<GameObject> mGolds = new List<GameObject>();
         List<GameObject> mAmmos = new List<GameObject>();
@@ -36,6 +39,8 @@ namespace Maze
         public Text mGoldScoreText;
         public Text mAmmoScoreText;
         #endregion
+
+        int mLevel = 0;
 
         public Button mShootButton;
 
@@ -129,7 +134,10 @@ namespace Maze
         void OnEnterPlaying()
         {
             mPlayerMovement.mPlayer.SetActive(true);
-            StartCoroutine(Coroutine_Spawn_NPC());
+            float duration = 10.0f - mLevel;
+
+            if (duration < 2.0f) duration = 2.0f;
+            StartCoroutine(Coroutine_Spawn_NPC(duration));
             if(mAmmoScore > 0)
             {
                 mShootButton.gameObject.SetActive(true);
@@ -218,6 +226,40 @@ namespace Maze
             toRemove.Clear();
         }
 
+        void CheckForShootItem_NPC_Collision()
+        {
+            List<MazePathFinder> toRemove1 = new List<MazePathFinder>();
+            List<MazePathFinder> toRemove2 = new List<MazePathFinder>();
+            for (int i = 0; i < mShootItems.Count; ++i)
+            {
+                for (int j = 0; j < mNPCs.Count; ++j)
+                {
+                    if (
+                    Mathf.Abs(mShootItems[i].transform.position.x - mNPCs[j].transform.position.x) < 0.5f &&
+                    Mathf.Abs(mShootItems[i].transform.position.y - mNPCs[j].transform.position.y) < 0.5f)
+                    {
+                        mPSManager.ShowEFX(32, mShootItems[i].transform.position);
+                        toRemove1.Add(mShootItems[i]);
+                        toRemove2.Add(mNPCs[j]);
+                    }
+                }
+            }
+
+            for (int i = 0; i < toRemove1.Count; ++i)
+            {
+                mShootItems.Remove(toRemove1[i]);
+                Destroy(toRemove1[i].gameObject);
+            }
+            toRemove1.Clear();
+
+            for (int i = 0; i < toRemove2.Count; ++i)
+            {
+                mNPCs.Remove(toRemove2[i]);
+                Destroy(toRemove2[i].gameObject);
+            }
+            toRemove2.Clear();
+        }
+
         void OnUpdatePlaying()
         {
             if (mAmmoScore > 0)
@@ -229,8 +271,9 @@ namespace Maze
             CheckForNPC_Player_Collision();
             CheckForGold_Player_Collision();
             CheckForAmmo_Player_Collision();
+            CheckForShootItem_NPC_Collision();
 
-            if(mFireButton.Pressed)
+            if (mFireButton.Pressed)
             {
                 //StartCoroutine(Coroutine_Fire());
             }
@@ -284,10 +327,6 @@ namespace Maze
         {
             while (mFsm.GetCurrentState().ID == (int)GameState.StateID.PLAYING)
             {
-                //
-                //Maze.Cell goal = mCurrentGenerator.maze.GetCell(mCurrentGenerator.cols - 1, mCurrentGenerator.rows - 1);
-                //int sx = goal.x + mCurrentGenerator.START_X;
-                //int sy = goal.y + mCurrentGenerator.START_Y;
 
                 int rx = Random.Range(2, mCurrentGenerator.cols - 2);
                 int ry = Random.Range(2, mCurrentGenerator.rows - 2);
@@ -321,7 +360,19 @@ namespace Maze
             Destroy(pf.gameObject);
         }
 
+        IEnumerator Coroutine_ShootItemOnReachGoal(MazePathFinder pf)
+        {
+            yield return StartCoroutine(mPSManager.Coroutine_ShowEFX(14, pf.gameObject.transform.position, 0.2f));
+            mShootItems.Remove(pf);
+            Destroy(pf.gameObject);
+        }
+
         void NPCOnReachGoal(MazePathFinder pf)
+        {
+            StartCoroutine(Coroutine_NPCOnReachGoal(pf));
+        }
+
+        void ShootItemOnReachGoal(MazePathFinder pf)
         {
             StartCoroutine(Coroutine_NPCOnReachGoal(pf));
         }
@@ -405,6 +456,7 @@ namespace Maze
         void OnEnterWin()
         {
             StartCoroutine(Coroutine_OnEnterWin());
+            mLevel += 1;
         }
 
         void OnEnterLose()
@@ -423,7 +475,35 @@ namespace Maze
 
         public void Shoot()
         {
-            Debug.Log("TODO: Shoot");
+            if (mNPCs.Count == 0) return;
+            if (mAmmoScore < 2) return;
+
+            mAmmoScore -= 2;
+
+            // npc pos
+            int ex = (int)mNPCs[0].transform.position.x - mCurrentGenerator.START_X;
+            int ey = (int)mNPCs[0].transform.position.y - mCurrentGenerator.START_Y;
+
+            // player position.
+            int dx = (int)mPlayerMovement.mPlayer.transform.position.x - mCurrentGenerator.START_X;
+            int dy = (int)mPlayerMovement.mPlayer.transform.position.y - mCurrentGenerator.START_Y;
+
+            GameObject npc = Instantiate(mShootItemPrefab, mPlayerMovement.mPlayer.transform.position, Quaternion.identity);
+            MazePathFinder mpf = npc.AddComponent<MazePathFinder>();
+            mpf.mGenerator = mCurrentGenerator;
+            mpf.mNpc = npc;
+            mpf.mSpeed = 10.0f;
+
+            // attach a PS to it.
+            Transform obj = Instantiate(mShootEffectPrefab, npc.transform.position, Quaternion.identity);
+            obj.transform.localScale = new Vector3(0.2f, 0.2f, 0.2f);
+            obj.SetParent(npc.transform);
+
+            // apply the path finder.
+            mpf.FindPath(mCurrentGenerator.maze.GetCell(dx, dy), mCurrentGenerator.maze.GetCell(ex, ey));
+            mShootItems.Add(mpf);
+
+            mpf.onReachGoal += ShootItemOnReachGoal;
         }
     }
 }
