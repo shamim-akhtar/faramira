@@ -374,7 +374,7 @@ namespace Maze
 
         void ShootItemOnReachGoal(MazePathFinder pf)
         {
-            StartCoroutine(Coroutine_NPCOnReachGoal(pf));
+            StartCoroutine(Coroutine_ShootItemOnReachGoal(pf));
         }
 
         IEnumerator Coroutine_Spawn_Gold(int count = 5)
