@@ -13,6 +13,7 @@ public class SplitImage
     public string mImageFilename { get; set; }
     public SpriteRenderer mSpriteRenderer { get; set; }
     public Transform TilesParent { get; set; }
+    public Material mShadowMaterial { get; set; }
 
     Vec2[] mCurvyCoords = new Vec2[]
     {
@@ -187,6 +188,9 @@ public class SplitImage
         GameObject obj = new GameObject();
         obj.name = "Tile_" + i.ToString() + "_" + j.ToString();
         SplitTile tile = obj.AddComponent<SplitTile>();
+
+        tile.ShadowMaterial = mShadowMaterial;
+
         tile.mIndex = new Vector2Int(i, j);
         mGameObjects[i, j] = obj;
 
@@ -313,7 +317,7 @@ public class SplitImage
             for (int j = 20; j < tex.height + 20; ++j)
             {
                 Color col = tex.GetPixel(i - 20, j - 20);
-                col.a = 0.2f;
+                col.a = 0.4f;
                 new_tex.SetPixel(i, j, col);
             }
         }
@@ -540,6 +544,7 @@ public class SplitImage
 
                         mGameObjects[i, j].name = Reader.ReadString();
                         SplitTile tile = obj.AddComponent<SplitTile>();
+                        tile.ShadowMaterial = mShadowMaterial;
                         int tx = Reader.ReadInt32();
                         int ty = Reader.ReadInt32();
 

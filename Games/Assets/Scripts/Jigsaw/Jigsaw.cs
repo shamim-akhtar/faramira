@@ -13,6 +13,7 @@ public class Jigsaw : MonoBehaviour
     public Transform TilesParent;
     public Button mPlayButton;
     public List<Rect> mRegions = new List<Rect>();
+    public Material mShadowMaterial;
 
     private FiniteStateMachine mFsm = new FiniteStateMachine();
     enum GameStates
@@ -37,6 +38,7 @@ public class Jigsaw : MonoBehaviour
         mSplitImage.mImageFilename = mImageFilename;
         mSplitImage.mSpriteRenderer = mSpriteRenderer;
         mSplitImage.TilesParent = TilesParent;
+        mSplitImage.mShadowMaterial = mShadowMaterial;
 
         mFsm.Add(new State((int)GameStates.LOADING, OnEnterLoading, null, null, null));
         mFsm.Add(new State((int)GameStates.SHUFFLING, OnEnterShuffling, null, null, null));

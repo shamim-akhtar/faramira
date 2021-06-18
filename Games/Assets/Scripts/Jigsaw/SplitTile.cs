@@ -10,6 +10,10 @@ public class SplitTile : MonoBehaviour
 
     private Vector3 offset;
 
+    public Vector2 ShadowOffset = new Vector2(2.0f, -2.0f);
+    public Material ShadowMaterial;
+    GameObject shadowGameobject;
+
     private Vector3 GetCorrectPosition()
     {
         return new Vector3(mIndex.x * 100.0f, mIndex.y * 100.0f, 0.0f);
@@ -20,7 +24,20 @@ public class SplitTile : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        
+        //create a new gameobject to be used as drop shadow
+        shadowGameobject = new GameObject("Shadow");
+
+        //create a new SpriteRenderer for Shadow gameobject
+        SpriteRenderer shadowSpriteRenderer = shadowGameobject.AddComponent<SpriteRenderer>();
+
+        //set the shadow gameobject's sprite to the original sprite
+        shadowSpriteRenderer.sprite = mSpriteRenderer.sprite;
+        //set the shadow gameobject's material to the shadow material we created
+        shadowSpriteRenderer.material = ShadowMaterial;
+
+        //update the sorting layer of the shadow to always lie behind the sprite
+        shadowSpriteRenderer.sortingLayerName = mSpriteRenderer.sortingLayerName;
+        shadowSpriteRenderer.sortingOrder = mSpriteRenderer.sortingOrder - 1;
     }
 
     // Update is called once per frame
@@ -63,5 +80,12 @@ public class SplitTile : MonoBehaviour
             transform.position = GetCorrectPosition();
         }
         mSpriteRenderer.sortingOrder = 0;
+    }
+
+    void LateUpdate()
+    {
+        //update the position and rotation of the sprite's shadow with moving sprite
+        shadowGameobject.transform.localPosition = transform.localPosition + (Vector3)ShadowOffset;
+        shadowGameobject.transform.localRotation = transform.localRotation;
     }
 }
