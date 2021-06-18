@@ -4,6 +4,10 @@ using UnityEngine;
 using UnityEngine.UI;
 using Patterns;
 using UnityEngine.SceneManagement;
+using System.IO;
+using System.Runtime.Serialization.Formatters.Binary;
+using System.Runtime.Serialization;
+using System.IO.Compression;
 
 namespace Tetris
 { 
@@ -24,6 +28,7 @@ namespace Tetris
         public Text mLevelText;
         public Text mScoreText;
         public Text mLinesText;
+        public Text mMaxScoreText;
         private int mScore = 0;
 
         public AudioSource mAudioSource;
@@ -49,6 +54,29 @@ namespace Tetris
         //private bool mLeftKeyPressed = false;
         //private bool mRightKeyPressed = false;
         public FixedButton mBtnDown;
+        int mMaxScore = 0;
+
+        #region SAVE/LOAD
+        void Save()
+        {
+            string filename = Application.persistentDataPath + "/tetris";
+            using (BinaryWriter Writer = new BinaryWriter(File.Open(filename, FileMode.Create)))
+            {
+                Writer.Write(mMaxScore);
+            }
+        }
+        void Load()
+        {
+            string filename = Application.persistentDataPath + "/tetris";
+            if (File.Exists(filename))
+            {
+                using (BinaryReader Reader = new BinaryReader(File.Open(filename, FileMode.Open)))
+                {
+                    mMaxScore = Reader.ReadInt32();
+                }
+            }
+        }
+        #endregion
 
         public void InstantiateBlock(int id)
         {
@@ -134,6 +162,21 @@ namespace Tetris
                 mScore += 10;
             }
             mScoreText.text = mScore.ToString();
+            if(mMaxScore < mScore)
+            {
+                mMaxScore = mScore;
+            }
+            mMaxScoreText.text = mMaxScore.ToString();
+        }
+
+        void OnDestroy()
+        {
+            Save();
+        }
+
+        void Awake()
+        {
+            Load();
         }
 
         void Lost()
@@ -149,6 +192,7 @@ namespace Tetris
             mLinesRemoved = 0;
             mLastLineRemovedTime = 0.0f;
             mLevelText.text = mLevel.ToString();
+            mLinesText.text = GetLinesToClearLevel(mLevel).ToString();
         }
 
         public GameObject mBoardSquare;
@@ -196,6 +240,9 @@ namespace Tetris
             mCanvasConfirm.onClickNo = OnCancelExitGame;
             mCanvasConfirm.onClickYes = LoadMainMenu;
             mFsm.SetCurrentState((int)GameState.StateID.PLAYING);
+
+            mMaxScoreText.text = mMaxScore.ToString();
+            mLinesText.text = GetLinesToClearLevel(mLevel).ToString();
         }
 
         void Update()
@@ -478,7 +525,7 @@ namespace Tetris
 
         public int GetLinesToClearLevel(int level)
         {
-            return 10;
+            return 20;
         }
 
         IEnumerator Coroutine_RemoveLines()
