@@ -4,6 +4,10 @@ using UnityEngine;
 using UnityEngine.UI;
 using Patterns;
 using System;
+using System.IO;
+using System.Runtime.Serialization.Formatters.Binary;
+using System.Runtime.Serialization;
+using System.IO.Compression;
 
 namespace Breakout
 {
@@ -17,6 +21,11 @@ namespace Breakout
         public GameObject[] PrefabBricks;
         public Button mPushButton;
         public Text mScoreText;
+        public Text mLivesText;
+        public Text mMaxScoreText;
+        private int mMaxScore = 0;
+
+        int mNumberOfLives = 3;
         private int mScore = 0;
 
         public PSManager mPSManager;
@@ -36,6 +45,33 @@ namespace Breakout
         float probabilityToHideBrick = 0.1f;
 
         private Dictionary<TwoDPoint, GameObject> mBricks = new Dictionary<TwoDPoint, GameObject>();
+
+        #region SAVE/LOAD
+        void Save()
+        {
+            string filename = Application.persistentDataPath + "/breakout";
+            using (BinaryWriter Writer = new BinaryWriter(File.Open(filename, FileMode.Create)))
+            {
+                Writer.Write(mMaxScore);
+            }
+        }
+        void Load()
+        {
+            string filename = Application.persistentDataPath + "/breakout";
+            if (File.Exists(filename))
+            {
+                using (BinaryReader Reader = new BinaryReader(File.Open(filename, FileMode.Open)))
+                {
+                    mMaxScore = Reader.ReadInt32();
+                }
+            }
+        }
+        #endregion
+
+        void OnDestroy()
+        {
+            Save();
+        }
 
         void Start()
         {
@@ -72,6 +108,9 @@ namespace Breakout
                     GameState.StateID.LOSE,
                     OnEnterLose)
                 );
+
+            Load();
+
             mMenuHandler.onClickNextGame += NextGame;
             mFsm.SetCurrentState((int)GameState.StateID.NEW_GAME);
         }
@@ -101,8 +140,14 @@ namespace Breakout
         #region State Machine Functions
         void OnEnterNewGame()
         {
+            mNumberOfLives = 3;
             mFsm.SetCurrentState((int)GameState.StateID.GENERATING);
             mMenuHandler.SetActiveBtnNext(false);
+
+            UpdateScoreText();
+
+            //mLivesText.text = mNumberOfLives.ToString();
+            //mMaxScoreText.text = mMaxScore.ToString();
         }
 
         void OnEnterPushball()
@@ -126,12 +171,6 @@ namespace Breakout
                     int index = UnityEngine.Random.Range(0, PrefabBricks.Length);
                     GameObject brick = Instantiate(PrefabBricks[index], new Vector3(posx, posy, 0.0f), Quaternion.identity);
                     Brick brickScript = brick.GetComponent<Brick>();
-
-                    //float prob = UnityEngine.Random.Range(0.0f, 1.0f);
-                    //if (prob < probabilityToHideBrick)
-                    //{
-                    //    brick.SetActive(false);
-                    //}
 
                     TwoDPoint pt = new TwoDPoint(x, y);
                     brickScript.mPoint = pt;
@@ -161,6 +200,9 @@ namespace Breakout
                 yield return null;
             }
             mBricks.Clear();
+
+            mFsm.SetCurrentState((int)Breakout.GameState.StateID.NEW_GAME);
+            StartCoroutine(Coroutine_ResetBall());
         }
 
         void ShowPushButton(bool flag)
@@ -193,7 +235,6 @@ namespace Breakout
 
         IEnumerator Coroutine_CleanBoard()
         {
-            //yield return StartCoroutine(Coroutine_DestroyAllBricks());
             yield return StartCoroutine(Coroutine_ResetBall());
             mMenuHandler.SetActiveBtnNext(true);
             mBat.GetComponent<BatMovement>().playing = false;
@@ -207,10 +248,42 @@ namespace Breakout
 
         void OnEnterLose()
         {
-            StartCoroutine(Coroutine_CleanBoard());
-            mBat.GetComponent<BatMovement>().playing = false;
+            if(mNumberOfLives == 0)
+            {
+                // see a video ad?
+                // increase life count.
+            }
+            else
+            {
+                mNumberOfLives -= 1;
+            }
+            mLivesText.text = mNumberOfLives.ToString();
+
+            if (mNumberOfLives == 0)
+            {
+                mScore = 0;
+                //mScoreText.text = mScore.ToString();
+                UpdateScoreText();
+                StartCoroutine(Coroutine_DestroyAllBricks());
+            }
+            else
+            {
+                StartCoroutine(Coroutine_CleanBoard());
+                mBat.GetComponent<BatMovement>().playing = false;
+            }
         }
         #endregion
+
+        void UpdateScoreText()
+        {
+            mScoreText.text = mScore.ToString();
+            if(mScore > mMaxScore)
+            {
+                mMaxScore = mScore;
+            }
+            mMaxScoreText.text = mMaxScore.ToString();
+            mLivesText.text = mNumberOfLives.ToString();
+        }
 
         #region Ball Hitting Bricks
         public void BallHitBrick(Brick brick)
@@ -221,9 +294,10 @@ namespace Breakout
             mScore += brick.mScoreWhenHit;
             Destroy(brick.gameObject);
 
-            mScoreText.text = mScore.ToString();
+            //mScoreText.text = mScore.ToString();
+            UpdateScoreText();
 
-            if(mBricks.Count == 0)
+            if (mBricks.Count == 0)
             {
                 SetState(GameState.StateID.WIN);
             }
