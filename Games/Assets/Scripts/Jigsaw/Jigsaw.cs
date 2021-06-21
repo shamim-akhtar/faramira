@@ -10,10 +10,13 @@ public class Jigsaw : MonoBehaviour
 
     public string mImageFilename;
     public SpriteRenderer mSpriteRenderer;
+    public int mSortingLayer;
     public Transform TilesParent;
     public Button mPlayButton;
     public List<Rect> mRegions = new List<Rect>();
     public Material mShadowMaterial;
+
+    public static TilesSorting sTilesSorting = new TilesSorting();
 
     private FiniteStateMachine mFsm = new FiniteStateMachine();
     enum GameStates
@@ -24,6 +27,8 @@ public class Jigsaw : MonoBehaviour
         WIN,
         SHOW_SOLUTION,
     }
+
+    int mTotalTilesInCorrectPosition = 0;
 
     #region Jigsaw Game Data
     #endregion
@@ -39,6 +44,7 @@ public class Jigsaw : MonoBehaviour
         mSplitImage.mSpriteRenderer = mSpriteRenderer;
         mSplitImage.TilesParent = TilesParent;
         mSplitImage.mShadowMaterial = mShadowMaterial;
+        //mSplitImage.mSortingLayer = mSortingLayer;
 
         mFsm.Add(new State((int)GameStates.LOADING, OnEnterLoading, null, null, null));
         mFsm.Add(new State((int)GameStates.SHUFFLING, OnEnterShuffling, null, null, null));
@@ -68,7 +74,35 @@ public class Jigsaw : MonoBehaviour
             mPlayButton.gameObject.SetActive(false);
             mFsm.SetCurrentState((int)GameStates.PLAYING);
         }
+
+        for(int i = 0; i < mSplitImage.mTilesX; i++)
+        {
+            for(int j = 0; j < mSplitImage.mTilesY; ++j)
+            {
+                SplitTile tile = mSplitImage.mGameObjects[i, j].GetComponent<SplitTile>();
+                tile.mOnSetCorrectPosition += OnSetCorrectPosition;
+                //tile.mSpriteRenderer.sortingOrder = i * mSplitImage.mTilesX + j;
+                sTilesSorting.Add(tile.mSpriteRenderer);
+                if (tile.IsInCorrectPosition())
+                {
+                    OnSetCorrectPosition(tile);
+                }
+            }
+        }
         return false;
+    }
+
+    void OnSetCorrectPosition(SplitTile tile)
+    {
+        mTotalTilesInCorrectPosition += 1;
+        tile.enabled = false;
+        tile.mSpriteRenderer.sortingLayerName = "Background";
+        tile.mSpriteRenderer.sortingOrder = 1;
+        sTilesSorting.Remove(tile.mSpriteRenderer);
+        if (mTotalTilesInCorrectPosition == mSplitImage.mGameObjects.Length)
+        {
+            mFsm.SetCurrentState((int)GameStates.WIN);
+        }
     }
 
     void OnEnterLoading()
@@ -89,10 +123,10 @@ public class Jigsaw : MonoBehaviour
 
     void OnUpdatePlaying()
     {
-        if (HasCompleted())
-        {
-            mFsm.SetCurrentState((int)GameStates.WIN);
-        }
+        //if (HasCompleted())
+        //{
+        //    mFsm.SetCurrentState((int)GameStates.WIN);
+        //}
     }
 
     void OnEnterWin()
@@ -171,17 +205,17 @@ public class Jigsaw : MonoBehaviour
         mFsm.Update();
     }
 
-    bool HasCompleted()
-    {
-        for(int i = 0; i < mSplitImage.mTilesX; ++i)
-        {
-            for(int j = 0; j < mSplitImage.mTilesY; ++j)
-            {
-                if (mSplitImage.mGameObjects[i, j].transform.position.x != i * 100.0f ||
-                    mSplitImage.mGameObjects[i, j].transform.position.y != j * 100.0f)
-                    return false;
-            }
-        }
-        return true;
-    }
+    //bool HasCompleted()
+    //{
+    //    for(int i = 0; i < mSplitImage.mTilesX; ++i)
+    //    {
+    //        for(int j = 0; j < mSplitImage.mTilesY; ++j)
+    //        {
+    //            if (mSplitImage.mGameObjects[i, j].transform.position.x != i * 100.0f ||
+    //                mSplitImage.mGameObjects[i, j].transform.position.y != j * 100.0f)
+    //                return false;
+    //        }
+    //    }
+    //    return true;
+    //}
 }

@@ -37,6 +37,10 @@ public class SplitImage
         new Vec2(100, 0)
     };
 
+    public SplitImage()
+    {
+    }
+
     void CreateSprite()
     {
         Texture2D tex = SpriteUtils.LoadTexture("Images/" + mImageFilename);
@@ -267,6 +271,8 @@ public class SplitImage
         // Set the tile texture to the sprite.
         Sprite sprite = SpriteUtils.CreateSpriteFromTexture2D(mTileTexture, 0, 0, 140, 140);
         spren.sprite = sprite;
+        spren.sortingLayerName = "Tiles";
+        spren.sortingLayerID = SortingLayer.NameToID("Tiles");
 
         obj.AddComponent<BoxCollider2D>();
     }
@@ -575,7 +581,7 @@ public class SplitImage
                         tex.Apply();
 
                         tile.mSpriteRenderer = spriteRenderer;
-
+                        spriteRenderer.sortingLayerName = "Tiles";
                         spriteRenderer.sprite = SpriteUtils.CreateSpriteFromTexture2D(tex, (int)rx, (int)ry, (int)rw, (int)rh);
                         obj.AddComponent<BoxCollider2D>();
                     }
