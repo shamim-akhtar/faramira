@@ -17,6 +17,10 @@ public class Jigsaw : MonoBehaviour
     public Material mShadowMaterial;
     public FixedButton mShowImage;
 
+    public Text mTextTotalTiles;
+    public Text mTextInPlaceTiles;
+    public Text mTextTime;
+
     public static TilesSorting sTilesSorting = new TilesSorting();
     public static bool sCameraPanning = true;
 
@@ -100,6 +104,8 @@ public class Jigsaw : MonoBehaviour
                 }
             }
         }
+
+        mTextTotalTiles.text = (mSplitImage.mTilesX * mSplitImage.mTilesY).ToString();
         return false;
     }
 
@@ -114,6 +120,7 @@ public class Jigsaw : MonoBehaviour
         {
             mFsm.SetCurrentState((int)GameStates.WIN);
         }
+        mTextInPlaceTiles.text = mTotalTilesInCorrectPosition.ToString();
     }
 
     void OnEnterLoading()
@@ -138,10 +145,6 @@ public class Jigsaw : MonoBehaviour
         {
             mFsm.SetCurrentState((int)GameStates.SHOW_SOLUTION);
         }
-        //if (HasCompleted())
-        //{
-        //    mFsm.SetCurrentState((int)GameStates.WIN);
-        //}
     }
 
     void OnEnterWin()
@@ -238,18 +241,4 @@ public class Jigsaw : MonoBehaviour
     {
         mFsm.Update();
     }
-
-    //bool HasCompleted()
-    //{
-    //    for(int i = 0; i < mSplitImage.mTilesX; ++i)
-    //    {
-    //        for(int j = 0; j < mSplitImage.mTilesY; ++j)
-    //        {
-    //            if (mSplitImage.mGameObjects[i, j].transform.position.x != i * 100.0f ||
-    //                mSplitImage.mGameObjects[i, j].transform.position.y != j * 100.0f)
-    //                return false;
-    //        }
-    //    }
-    //    return true;
-    //}
 }
