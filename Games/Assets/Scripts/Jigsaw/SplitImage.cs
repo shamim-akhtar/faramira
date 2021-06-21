@@ -331,7 +331,7 @@ public class SplitImage
             for (int j = 20; j < tex.height + 20; ++j)
             {
                 Color col = tex.GetPixel(i - 20, j - 20);
-                col.a = 0.2f;
+                col.a = 0.0f;
                 new_tex.SetPixel(i, j, col);
             }
         }
