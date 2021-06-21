@@ -10,9 +10,9 @@ public class SplitTile : MonoBehaviour
 
     private Vector3 offset;
 
-    //public Vector2 ShadowOffset = new Vector2(2.0f, -2.0f);
+    public Vector2 ShadowOffset = new Vector2(2.0f, -2.0f);
     public Material ShadowMaterial;
-    //GameObject shadowGameobject;
+    SpriteRenderer shadowSpriteRenderer = null;
     public delegate void DelegateOnSetCorrectPosition(SplitTile tile);
     public DelegateOnSetCorrectPosition mOnSetCorrectPosition;
 
@@ -27,20 +27,22 @@ public class SplitTile : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        ////create a new gameobject to be used as drop shadow
-        //shadowGameobject = new GameObject("Shadow");
+        //create a new gameobject to be used as drop shadow
+        GameObject shadowGameobject = new GameObject("Shadow");
+        shadowGameobject.transform.SetParent(this.transform);
+        shadowGameobject.transform.localPosition = (Vector3)ShadowOffset;
 
-        ////create a new SpriteRenderer for Shadow gameobject
-        //SpriteRenderer shadowSpriteRenderer = shadowGameobject.AddComponent<SpriteRenderer>();
+        //create a new SpriteRenderer for Shadow gameobject
+        shadowSpriteRenderer = shadowGameobject.AddComponent<SpriteRenderer>();
 
-        ////set the shadow gameobject's sprite to the original sprite
-        //shadowSpriteRenderer.sprite = mSpriteRenderer.sprite;
-        ////set the shadow gameobject's material to the shadow material we created
-        //shadowSpriteRenderer.material = ShadowMaterial;
+        //set the shadow gameobject's sprite to the original sprite
+        shadowSpriteRenderer.sprite = mSpriteRenderer.sprite;
+        //set the shadow gameobject's material to the shadow material we created
+        shadowSpriteRenderer.material = ShadowMaterial;
 
-        ////update the sorting layer of the shadow to always lie behind the sprite
-        //shadowSpriteRenderer.sortingLayerName = mSpriteRenderer.sortingLayerName;
-        //shadowSpriteRenderer.sortingOrder = mSpriteRenderer.sortingOrder - 1;
+        //update the sorting layer of the shadow to always lie behind the sprite
+        shadowSpriteRenderer.sortingLayerName = "DropShadow";
+        shadowSpriteRenderer.sortingOrder = mSpriteRenderer.sortingOrder;
     }
 
     // Update is called once per frame
@@ -54,8 +56,7 @@ public class SplitTile : MonoBehaviour
         {
             return;
         }
-        //mSpriteRenderer.sortingOrder = 1;
-        Jigsaw.sTilesSorting.BringToTop(mSpriteRenderer);
+        Jigsaw.sTilesSorting.BringToTop(this);
 
         offset = transform.position - Camera.main.ScreenToWorldPoint(
             new Vector3(Input.mousePosition.x, Input.mousePosition.y, 0.0f));
@@ -77,14 +78,12 @@ public class SplitTile : MonoBehaviour
         {
             return;
         }
-        //float distsq = (transform.position - GetCorrectPosition()).sqrMagnitude;
-        //if (distsq < 400.0f)
-        if(IsInCorrectPosition())
+
+        if (IsInCorrectPosition())
         {
             transform.position = GetCorrectPosition();
             mOnSetCorrectPosition?.Invoke(this);
         }
-        //mSpriteRenderer.sortingOrder = 0;
     }
 
     public bool IsInCorrectPosition()
@@ -97,10 +96,12 @@ public class SplitTile : MonoBehaviour
         return false;
     }
 
-    void LateUpdate()
+    public void SetRenderOrder(int order)
     {
-        ////update the position and rotation of the sprite's shadow with moving sprite
-        //shadowGameobject.transform.localPosition = transform.localPosition + (Vector3)ShadowOffset;
-        //shadowGameobject.transform.localRotation = transform.localRotation;
+        mSpriteRenderer.sortingOrder = order;
+        if (shadowSpriteRenderer != null)
+        {
+            shadowSpriteRenderer.sortingOrder = order;
+        }
     }
 }

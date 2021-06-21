@@ -82,7 +82,7 @@ public class Jigsaw : MonoBehaviour
                 SplitTile tile = mSplitImage.mGameObjects[i, j].GetComponent<SplitTile>();
                 tile.mOnSetCorrectPosition += OnSetCorrectPosition;
                 //tile.mSpriteRenderer.sortingOrder = i * mSplitImage.mTilesX + j;
-                sTilesSorting.Add(tile.mSpriteRenderer);
+                sTilesSorting.Add(tile);
                 if (tile.IsInCorrectPosition())
                 {
                     OnSetCorrectPosition(tile);
@@ -98,7 +98,7 @@ public class Jigsaw : MonoBehaviour
         tile.enabled = false;
         tile.mSpriteRenderer.sortingLayerName = "Background";
         tile.mSpriteRenderer.sortingOrder = 1;
-        sTilesSorting.Remove(tile.mSpriteRenderer);
+        sTilesSorting.Remove(tile);
         if (mTotalTilesInCorrectPosition == mSplitImage.mGameObjects.Length)
         {
             mFsm.SetCurrentState((int)GameStates.WIN);
