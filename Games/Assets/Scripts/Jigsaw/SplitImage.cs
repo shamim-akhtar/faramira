@@ -115,7 +115,11 @@ public class SplitImage
     }
 
     List<Vector3> mBezierPoints = new List<Vector3>();
+    Texture2D mBaseTextureNonTransparent;
     Texture2D mBaseTexture;
+
+    Sprite mBaseSpriteNonTransparent;
+    Sprite mSpriteTransparent;
 
     Color trans = new Color(0.0f, 0.0f, 0.0f, 0.0f);
 
@@ -164,7 +168,7 @@ public class SplitImage
         {
             for (int j = 0; j < 140; ++j)
             {
-                Color color = mBaseTexture.GetPixel(i + startX, j + startY);
+                Color color = mBaseTextureNonTransparent.GetPixel(i + startX, j + startY);
                 new_tex.SetPixel(i, j, color);
                 if (i < 20 && j < 20)
                 {
@@ -290,8 +294,9 @@ public class SplitImage
 
         mTilesX = tex.width / 100;
         mTilesY = tex.height / 100;
-
         // add 20 pixel border around.
+
+        Texture2D opaque_tex = new Texture2D(tex.width + 40, tex.height + 40, TextureFormat.ARGB32, 1, true);
         Texture2D new_tex = new Texture2D(tex.width + 40, tex.height + 40, TextureFormat.ARGB32, 1, true);
         for(int i = 20; i < tex.width + 20; ++i)
         {
@@ -300,10 +305,13 @@ public class SplitImage
                 Color col = tex.GetPixel(i - 20, j - 20);
                 col.a = 1.0f;
                 new_tex.SetPixel(i, j, col);
+                opaque_tex.SetPixel(i, j, col);
             }
         }
         new_tex.Apply();
-        mBaseTexture = new_tex;
+        opaque_tex.Apply();
+
+        mBaseTextureNonTransparent = opaque_tex;
 
         // create the bezier curve.
         CreateBezierCurve();
@@ -323,17 +331,28 @@ public class SplitImage
             for (int j = 20; j < tex.height + 20; ++j)
             {
                 Color col = tex.GetPixel(i - 20, j - 20);
-                col.a = 0.4f;
+                col.a = 0.2f;
                 new_tex.SetPixel(i, j, col);
             }
         }
         new_tex.Apply();
         mBaseTexture = new_tex;
 
-        Sprite sprite = SpriteUtils.CreateSpriteFromTexture2D(mBaseTexture, 0, 0, mBaseTexture.width, mBaseTexture.height);
-        mSpriteRenderer.sprite = sprite;
+        mSpriteTransparent = SpriteUtils.CreateSpriteFromTexture2D(mBaseTexture, 0, 0, mBaseTexture.width, mBaseTexture.height);
+        mSpriteRenderer.sprite = mSpriteTransparent;
 
-        //RelocateCamera();
+        mBaseSpriteNonTransparent = SpriteUtils.CreateSpriteFromTexture2D(mBaseTextureNonTransparent, 0, 0,
+            mBaseTextureNonTransparent.width, mBaseTextureNonTransparent.height);
+    }
+
+    public void ShowNonTransparentImage()
+    {
+        mSpriteRenderer.sprite = mBaseSpriteNonTransparent;
+    }
+
+    public void ShowTransparentImage()
+    {
+        mSpriteRenderer.sprite = mSpriteTransparent;
     }
 
     void RelocateCamera()
@@ -599,8 +618,36 @@ public class SplitImage
                 mBaseTexture.LoadImage(base_bytes);
                 mBaseTexture.Apply();
 
-                Sprite sprite = SpriteUtils.CreateSpriteFromTexture2D(mBaseTexture, 0, 0, mBaseTexture.width, mBaseTexture.height);
-                mSpriteRenderer.sprite = sprite;
+                Texture2D opaque_tex = new Texture2D(mBaseTexture.width, mBaseTexture.height, TextureFormat.ARGB32, 1, true);
+                for (int i = 0; i < mBaseTexture.width; ++i)
+                {
+                    for (int j = 0; j < mBaseTexture.height; ++j)
+                    {
+                        Color col = mBaseTexture.GetPixel(i, j);
+                        col.a = 1.0f;
+                        opaque_tex.SetPixel(i, j, col);
+                    }
+                }
+                opaque_tex.Apply();
+                mBaseTextureNonTransparent = opaque_tex;
+
+                mSpriteTransparent = SpriteUtils.CreateSpriteFromTexture2D(
+                        mBaseTexture, 
+                        0, 
+                        0, 
+                        mBaseTexture.width,
+                        mBaseTexture.height
+                    );
+
+                mBaseSpriteNonTransparent = SpriteUtils.CreateSpriteFromTexture2D(
+                        mBaseTextureNonTransparent, 
+                        0, 
+                        0, 
+                        mBaseTextureNonTransparent.width, 
+                        mBaseTextureNonTransparent.height
+                    );
+                //mSpriteRenderer.sprite = mBaseSpriteNonTransparent;
+                mSpriteRenderer.sprite = mSpriteTransparent;
             }
             return true;
         }

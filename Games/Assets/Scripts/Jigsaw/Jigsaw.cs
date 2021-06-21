@@ -15,6 +15,7 @@ public class Jigsaw : MonoBehaviour
     public Button mPlayButton;
     public List<Rect> mRegions = new List<Rect>();
     public Material mShadowMaterial;
+    public FixedButton mShowImage;
 
     public static TilesSorting sTilesSorting = new TilesSorting();
     public static bool sCameraPanning = true;
@@ -51,7 +52,7 @@ public class Jigsaw : MonoBehaviour
         mFsm.Add(new State((int)GameStates.SHUFFLING, OnEnterShuffling, null, null, null));
         mFsm.Add(new State((int)GameStates.PLAYING, OnEnterPlaying, null, OnUpdatePlaying, null));
         mFsm.Add(new State((int)GameStates.WIN, OnEnterWin, null, null, null));
-        mFsm.Add(new State((int)GameStates.SHOW_SOLUTION, OnEnterShowSolution, null, null, null));
+        mFsm.Add(new State((int)GameStates.SHOW_SOLUTION, OnEnterShowSolution, OnExitShowSolution, OnUpdateShowSolution, null));
 
         mFsm.SetCurrentState((int)GameStates.LOADING);
     }
@@ -106,9 +107,9 @@ public class Jigsaw : MonoBehaviour
     {
         mTotalTilesInCorrectPosition += 1;
         tile.enabled = false;
-        tile.mSpriteRenderer.sortingLayerName = "Background";
-        tile.mSpriteRenderer.sortingOrder = 1;
         sTilesSorting.Remove(tile);
+        tile.SetRenderOrder(1);
+        tile.mSpriteRenderer.sortingLayerName = "TilesInPlace";
         if (mTotalTilesInCorrectPosition == mSplitImage.mGameObjects.Length)
         {
             mFsm.SetCurrentState((int)GameStates.WIN);
@@ -128,11 +129,15 @@ public class Jigsaw : MonoBehaviour
 
     void OnEnterPlaying()
     {
-
+        mShowImage.gameObject.SetActive(true);
     }
 
     void OnUpdatePlaying()
     {
+        if (mShowImage.Pressed)
+        {
+            mFsm.SetCurrentState((int)GameStates.SHOW_SOLUTION);
+        }
         //if (HasCompleted())
         //{
         //    mFsm.SetCurrentState((int)GameStates.WIN);
@@ -142,11 +147,32 @@ public class Jigsaw : MonoBehaviour
     void OnEnterWin()
     {
         mPlayButton.gameObject.SetActive(true);
+        mShowImage.gameObject.SetActive(false);
     }
 
     void OnEnterShowSolution()
     {
+        Debug.Log("OnEnterShowSolution");
+        mSplitImage.ShowNonTransparentImage();
+    }
 
+    void OnExitShowSolution()
+    {
+        Debug.Log("OnExitShowSolution");
+        mSplitImage.ShowTransparentImage();
+    }
+
+    void OnUpdateShowSolution()
+    {
+        if(!mShowImage.Pressed)
+        {
+            mFsm.SetCurrentState((int)GameStates.PLAYING);
+        }
+    }
+
+    public void OnClickShowImageButton()
+    {
+        mFsm.SetCurrentState((int)GameStates.SHOW_SOLUTION);
     }
 
     public void OnClicplPlayButton()
