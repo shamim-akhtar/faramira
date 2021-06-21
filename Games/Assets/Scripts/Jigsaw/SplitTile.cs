@@ -107,5 +107,10 @@ public class SplitTile : MonoBehaviour
         {
             shadowSpriteRenderer.sortingOrder = order;
         }
+
+        //set the z value so that selection/raycast selects the top sprite.
+        Vector3 p = mSpriteRenderer.gameObject.transform.position;
+        p.z = -order / 10.0f;
+        mSpriteRenderer.gameObject.transform.position = p;
     }
 }

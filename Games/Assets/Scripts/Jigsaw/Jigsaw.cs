@@ -152,13 +152,11 @@ public class Jigsaw : MonoBehaviour
 
     void OnEnterShowSolution()
     {
-        Debug.Log("OnEnterShowSolution");
         mSplitImage.ShowNonTransparentImage();
     }
 
     void OnExitShowSolution()
     {
-        Debug.Log("OnExitShowSolution");
         mSplitImage.ShowTransparentImage();
     }
 
