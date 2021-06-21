@@ -17,6 +17,7 @@ public class Jigsaw : MonoBehaviour
     public Material mShadowMaterial;
 
     public static TilesSorting sTilesSorting = new TilesSorting();
+    public static bool sCameraPanning = true;
 
     private FiniteStateMachine mFsm = new FiniteStateMachine();
     enum GameStates
@@ -67,25 +68,34 @@ public class Jigsaw : MonoBehaviour
         if (!mSplitImage.LoadGame())
         {
             mSplitImage.CreateJigsawTiles();
+
+            for (int i = 0; i < mSplitImage.mTilesX; i++)
+            {
+                for (int j = 0; j < mSplitImage.mTilesY; ++j)
+                {
+                    SplitTile tile = mSplitImage.mGameObjects[i, j].GetComponent<SplitTile>();
+                    tile.mOnSetCorrectPosition += OnSetCorrectPosition;
+                    sTilesSorting.Add(tile);
+                }
+            }
         }
         else
         {
             // directly go to PLAY mode.
             mPlayButton.gameObject.SetActive(false);
             mFsm.SetCurrentState((int)GameStates.PLAYING);
-        }
 
-        for(int i = 0; i < mSplitImage.mTilesX; i++)
-        {
-            for(int j = 0; j < mSplitImage.mTilesY; ++j)
+            for (int i = 0; i < mSplitImage.mTilesX; i++)
             {
-                SplitTile tile = mSplitImage.mGameObjects[i, j].GetComponent<SplitTile>();
-                tile.mOnSetCorrectPosition += OnSetCorrectPosition;
-                //tile.mSpriteRenderer.sortingOrder = i * mSplitImage.mTilesX + j;
-                sTilesSorting.Add(tile);
-                if (tile.IsInCorrectPosition())
+                for (int j = 0; j < mSplitImage.mTilesY; ++j)
                 {
-                    OnSetCorrectPosition(tile);
+                    SplitTile tile = mSplitImage.mGameObjects[i, j].GetComponent<SplitTile>();
+                    tile.mOnSetCorrectPosition += OnSetCorrectPosition;
+                    sTilesSorting.Add(tile);
+                    if (tile.IsInCorrectPosition())
+                    {
+                        OnSetCorrectPosition(tile);
+                    }
                 }
             }
         }

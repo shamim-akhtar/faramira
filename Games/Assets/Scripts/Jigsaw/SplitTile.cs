@@ -56,6 +56,9 @@ public class SplitTile : MonoBehaviour
         {
             return;
         }
+
+        Jigsaw.sCameraPanning = false;
+
         Jigsaw.sTilesSorting.BringToTop(this);
 
         offset = transform.position - Camera.main.ScreenToWorldPoint(
@@ -78,6 +81,7 @@ public class SplitTile : MonoBehaviour
         {
             return;
         }
+        Jigsaw.sCameraPanning = true;
 
         if (IsInCorrectPosition())
         {
