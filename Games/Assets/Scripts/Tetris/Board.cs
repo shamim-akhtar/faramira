@@ -56,6 +56,8 @@ namespace Tetris
         public FixedButton mBtnDown;
         int mMaxScore = 0;
 
+        public SceneAmbientSound mSceneAmbientSound;
+
         #region SAVE/LOAD
         void Save()
         {
@@ -193,6 +195,12 @@ namespace Tetris
             mLastLineRemovedTime = 0.0f;
             mLevelText.text = mLevel.ToString();
             mLinesText.text = GetLinesToClearLevel(mLevel).ToString();
+
+            // change audio.
+            if(mSceneAmbientSound != null)
+            {
+                mSceneAmbientSound.ChangeAudio();
+            }
         }
 
         public GameObject mBoardSquare;
@@ -517,9 +525,9 @@ namespace Tetris
             }
             mLinesRemoved += 1;
             mLinesText.text = (GetLinesToClearLevel(mLevel) - mLinesRemoved).ToString();
-            //Debug.Log("mLinesRemoved: " + mLinesRemoved);
             UpdateScore();
             mLastLineRemovedTime = Time.time - mLastLineRemovedTime;
+            Debug.Log("mLastLineRemovedTime: " + mLastLineRemovedTime);
             yield return null;
         }
 

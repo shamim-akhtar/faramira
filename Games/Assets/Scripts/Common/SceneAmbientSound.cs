@@ -7,6 +7,7 @@ public class SceneAmbientSound : AmbientSound
     public AudioClip[] mAudioClips;
     public CanvasConfirmA mConfirmExit;
     public bool mPlaySoundOnStart = false;
+    public bool mShuffleAudio = false;
 
     int mIndex = 0;
     void OnSceneExitFadeOut(float t)
@@ -32,6 +33,11 @@ public class SceneAmbientSound : AmbientSound
             mIndex= Random.Range(0, mAudioClips.Length);
             Play(mAudioClips[mIndex]);
         }
+
+        if (mShuffleAudio)
+        {
+            StartCoroutine(Coroutine_ShuffleAudio());
+        }
     }
 
     public void ChangeAudio()
@@ -43,5 +49,15 @@ public class SceneAmbientSound : AmbientSound
         }
         mIndex = index;
         base.Play(mAudioClips[mIndex]);
+    }
+
+    IEnumerator Coroutine_ShuffleAudio()
+    {
+        while(true)
+        {
+            float secs = Random.Range(60, 180);
+            yield return new WaitForSeconds(secs);
+            ChangeAudio();
+        }
     }
 }

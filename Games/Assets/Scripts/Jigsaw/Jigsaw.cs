@@ -157,6 +157,7 @@ public class Jigsaw : MonoBehaviour
     {
         mPlayButton.gameObject.SetActive(true);
         mShowImage.gameObject.SetActive(false);
+        mSplitImage.SaveGame();
     }
 
     void OnEnterShowSolution()
