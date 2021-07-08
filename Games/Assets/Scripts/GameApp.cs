@@ -12,6 +12,8 @@ public class GameApp : Singleton<GameApp>
 
     Dictionary<string, AudioClip> sceneAudios = new Dictionary<string, AudioClip>();
 
+    public string JigsawImageFilename = "tall02_9_12";
+
     void Start()
     {
         SceneManager.LoadScene("_splash_screen");

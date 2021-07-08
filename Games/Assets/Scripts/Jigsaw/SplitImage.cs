@@ -37,8 +37,12 @@ public class SplitImage
         new Vec2(100, 0)
     };
 
+    //public System.DateTime mStartTimeOfGame;
+    public double mSecondsSinceStart = 0;
+
     public SplitImage()
     {
+        //mStartTimeOfGame = System.DateTime.Now;
     }
 
     void CreateSprite()
@@ -284,8 +288,10 @@ public class SplitImage
     // Start is called before the first frame update
     public void CreateJigsawTiles()
     {
+        string filen = "Images/Jigsaw/" + mImageFilename;
         // Load the main image.
-        Texture2D tex = SpriteUtils.LoadTexture("Images/Jigsaw/" + mImageFilename);
+        Texture2D tex = SpriteUtils.LoadTexture(filen);
+        Debug.Log("Texture: " + filen);
         if (!tex.isReadable)
         {
             Debug.Log("Texture is not readable");
@@ -485,12 +491,16 @@ public class SplitImage
     public void SaveGame()
     {
         BinaryWriter Writer = null;
-        string filename = Application.persistentDataPath + "/jigsaw";
+        string filename = Application.persistentDataPath + "/" + mImageFilename;
 
         try
         {
             // Create a new stream to write to the file
             Writer = new BinaryWriter(File.OpenWrite(filename));
+
+            // get the time and save it.
+            //long dateTime = System.DateTime.Now.ToBinary();
+            Writer.Write(mSecondsSinceStart);
 
             // Writer raw data   
             Writer.Write(mImageFilename);
@@ -546,11 +556,13 @@ public class SplitImage
 
     public bool LoadGame()
     {
-        string filename = Application.persistentDataPath + "/jigsaw";
+        string filename = Application.persistentDataPath + "/" + mImageFilename;
         if (File.Exists(filename))
         {
             using (BinaryReader Reader = new BinaryReader(File.Open(filename, FileMode.Open)))
             {
+                mSecondsSinceStart = Reader.ReadDouble();
+
                 mImageFilename = Reader.ReadString();
                 mTilesX = Reader.ReadInt32();
                 mTilesY = Reader.ReadInt32();
@@ -646,7 +658,6 @@ public class SplitImage
                         mBaseTextureNonTransparent.width, 
                         mBaseTextureNonTransparent.height
                     );
-                //mSpriteRenderer.sprite = mBaseSpriteNonTransparent;
                 mSpriteRenderer.sprite = mSpriteTransparent;
             }
             return true;

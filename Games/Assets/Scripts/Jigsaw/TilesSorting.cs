@@ -11,6 +11,11 @@ public class TilesSorting
 
     }
 
+    public void Clear()
+    {
+        mSortIndices.Clear();
+    }
+
     public void Add(SplitTile ren)
     {
         mSortIndices.Add(ren);

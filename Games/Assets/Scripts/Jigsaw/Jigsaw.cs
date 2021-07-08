@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using Patterns;
+using UnityEngine.SceneManagement;
 
 public class Jigsaw : MonoBehaviour
 {
@@ -46,6 +47,8 @@ public class Jigsaw : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        mImageFilename = GameApp.Instance.JigsawImageFilename;
+
         mSplitImage.mImageFilename = mImageFilename;
         mSplitImage.mSpriteRenderer = mSpriteRenderer;
         mSplitImage.TilesParent = TilesParent;
@@ -63,7 +66,8 @@ public class Jigsaw : MonoBehaviour
 
     void OnDestroy()
     {
-        if(mFsm.GetCurrentState().ID == (int)GameStates.PLAYING)
+        sTilesSorting.Clear();
+        if (mFsm.GetCurrentState().ID == (int)GameStates.PLAYING)
             mSplitImage.SaveGame();
     }
 
@@ -106,6 +110,8 @@ public class Jigsaw : MonoBehaviour
         }
 
         mTextTotalTiles.text = (mSplitImage.mTilesX * mSplitImage.mTilesY).ToString();
+
+        StartCoroutine(Coroutime_Timer());
         return false;
     }
 
@@ -165,7 +171,7 @@ public class Jigsaw : MonoBehaviour
 
     void OnUpdateShowSolution()
     {
-        if(!mShowImage.Pressed)
+        if (!mShowImage.Pressed)
         {
             mFsm.SetCurrentState((int)GameStates.PLAYING);
         }
@@ -183,9 +189,9 @@ public class Jigsaw : MonoBehaviour
 
     IEnumerator Coroutine_Shuffle()
     {
-        for(int i = 0; i < mSplitImage.mTilesX; ++i)
+        for (int i = 0; i < mSplitImage.mTilesX; ++i)
         {
-            for(int j = 0; j < mSplitImage.mTilesY; ++j)
+            for (int j = 0; j < mSplitImage.mTilesY; ++j)
             {
                 Shuffle(mSplitImage.mGameObjects[i, j]);
                 yield return null;
@@ -240,5 +246,28 @@ public class Jigsaw : MonoBehaviour
     void Update()
     {
         mFsm.Update();
+    }
+
+    IEnumerator Coroutime_Timer()
+    {
+        while (true)
+        {
+            yield return new WaitForSeconds(1.0f);
+            mSplitImage.mSecondsSinceStart += 1;
+
+            System.TimeSpan t = System.TimeSpan.FromSeconds(mSplitImage.mSecondsSinceStart);
+
+            string time = string.Format("{0:D2}:{1:D2}:{2:D2}",
+                            t.Hours,
+                            t.Minutes,
+                            t.Seconds);
+
+            mTextTime.text = time;
+        }
+    }
+
+    public void LoadJigsawMenu()
+    {
+        SceneManager.LoadScene("JigsawMenu");
     }
 }
