@@ -7,8 +7,7 @@ using UnityEngine.SceneManagement;
 public class GameApp : Singleton<GameApp>
 {
     public AmbientSound mAmbientSound;
-    public FaramiraAds mFaramiraAds;
-
+    //public BottomMenu mBottomMenu;
     public AudioClip[] mAudioClips;
 
     Dictionary<string, AudioClip> sceneAudios = new Dictionary<string, AudioClip>();
@@ -18,6 +17,13 @@ public class GameApp : Singleton<GameApp>
     void Start()
     {
         SceneManager.LoadScene("_splash_screen");
+        //sceneAudios.Add("MainMenu", mAudioClips[0]);
+        //sceneAudios.Add("TicTacToe", mAudioClips[1]);
+        //sceneAudios.Add("8Puzzle", mAudioClips[2]);
+        //sceneAudios.Add("Maze", mAudioClips[3]);
+        //sceneAudios.Add("Memory", mAudioClips[4]);
+        //sceneAudios.Add("Tetris", mAudioClips[5]);
+        //sceneAudios.Add("Quiz", mAudioClips[6]);
     }
 
     void Update()
